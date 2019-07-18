@@ -38,4 +38,11 @@ public class UserController {
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.badRequest().build());
     }
+
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable Long id)
+    {
+        userService.deleteById(id);
+    }
+
 }
