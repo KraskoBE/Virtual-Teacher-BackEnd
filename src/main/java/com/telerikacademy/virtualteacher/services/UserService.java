@@ -1,7 +1,7 @@
 package com.telerikacademy.virtualteacher.services;
 
+import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
 import com.telerikacademy.virtualteacher.models.User;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,7 @@ public interface UserService {
 
     Optional<User> findById(Long id);
 
-    Optional<User> save(User user);
+    Optional<User> save(UserRequestDTO user);
 
     //Optional<User> update(Long id, User user);
 

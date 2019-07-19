@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.telerikacademy.virtualteacher.validators.EmailConstraint;
 import com.telerikacademy.virtualteacher.validators.NameConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,24 +34,24 @@ public class User {
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^([_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{1,6}))?$")
+    @EmailConstraint
     @Column(name = "email")
     private String email;
 
     @NotNull
     @NameConstraint
     @Column(name = "first_name")
-    @Size(max=15)
+    @Size(max = 15)
     private String firstName;
 
     @NotNull
     @NameConstraint
     @Column(name = "last_name")
-    @Size(max=15)
+    @Size(max = 15)
     private String lastName;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Past
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
