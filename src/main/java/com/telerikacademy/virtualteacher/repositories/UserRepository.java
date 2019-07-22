@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
-    @Query(value = "update users u set u.enabled = 0 where u.user_id = :id", nativeQuery = true)
+    @Query(value = "update users u set u.enabled = 0 where u.user_id = :id", nativeQuery = true) //TODO
     void deleteById(@Param("id") Long id);
 }

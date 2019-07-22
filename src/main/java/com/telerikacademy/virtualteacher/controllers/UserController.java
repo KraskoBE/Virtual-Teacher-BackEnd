@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost",
@@ -53,7 +52,7 @@ public class UserController {
                         new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use"));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable Long id) {
         return userService.findById(id)
                 .map(record ->
@@ -62,7 +61,7 @@ public class UserController {
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         userService.deleteById(id);
     }
