@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,12 +56,21 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "users_roles",
+            name = "user_role",
             joinColumns = @JoinColumn(
                     name = "user_id", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
+
+    @OneToMany(mappedBy = "creator")
+    private List<Lecture> createdLectures = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Lecture> finishedLectures = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Assignment> assignments = new HashSet<>();
 
     @NotNull
     @Column(name = "enabled")
