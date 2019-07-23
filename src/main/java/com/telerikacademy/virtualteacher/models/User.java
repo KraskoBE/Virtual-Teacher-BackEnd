@@ -64,7 +64,13 @@ public class User {
     private Collection<Role> roles;
 
     @OneToMany(mappedBy = "creator")
-    private List<Lecture> createdLectures = new ArrayList<>();
+    private Set<Lecture> createdCourses = new HashSet<>();
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Course> enrolledCourses = new HashSet<>();
+
+    @OneToMany(mappedBy = "creator")
+    private Set<Lecture> createdLectures = new HashSet<>();
 
     @ManyToMany(mappedBy = "users")
     private Set<Lecture> finishedLectures = new HashSet<>();
