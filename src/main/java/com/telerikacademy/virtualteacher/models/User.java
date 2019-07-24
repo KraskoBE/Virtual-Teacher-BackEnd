@@ -4,12 +4,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.telerikacademy.virtualteacher.validators.EmailConstraint;
 import com.telerikacademy.virtualteacher.validators.NameConstraint;
+import com.telerikacademy.virtualteacher.validators.PasswordConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +21,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +30,7 @@ import java.util.*;
 @Entity
 @Where(clause = "enabled=1")
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,18 +38,19 @@ public class User {
     private Long id;
 
     @NotNull
-    @EmailConstraint
     @Column(name = "email")
     private String email;
 
     @NotNull
-    @NameConstraint
+    @Column(name = "password")
+    private String password;
+
+    @NotNull
     @Column(name = "first_name")
     @Size(max = 15)
     private String firstName;
 
     @NotNull
-    @NameConstraint
     @Column(name = "last_name")
     @Size(max = 15)
     private String lastName;
@@ -54,7 +60,7 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(
@@ -63,23 +69,59 @@ public class User {
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "creator")
-    private Set<Lecture> createdCourses = new HashSet<>();
+    private Set<Course> createdCourses = new HashSet<>();
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "users")
     private Set<Course> enrolledCourses = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private Set<Lecture> createdLectures = new HashSet<>();
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "users")
     private Set<Lecture> finishedLectures = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<Assignment> assignments = new HashSet<>();
 
+    @JsonIgnore
     @NotNull
     @Column(name = "enabled")
-    @JsonIgnore
     private boolean enabled = true;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return enabled;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return enabled;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return enabled;
+    }
 }

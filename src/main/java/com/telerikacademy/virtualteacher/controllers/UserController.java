@@ -1,18 +1,19 @@
 package com.telerikacademy.virtualteacher.controllers;
 
-import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost",
@@ -35,6 +36,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping
     public List findAll() {
         return userService.findAll()
@@ -43,24 +45,17 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
-    public ResponseEntity save(@Valid @RequestBody UserRequestDTO user) {
-        return userService.save(user)
-                .map(record ->
-                        ResponseEntity.ok().body(modelMapper.map(record, UserResponseDTO.class)))
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use"));
-    }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity findById(@PathVariable Long id) {
         return userService.findById(id)
-                .map(record ->
-                        ResponseEntity.ok().body(modelMapper.map(record, UserResponseDTO.class)))
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .map(record -> modelMapper.map(record, UserResponseDTO.class))
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         userService.deleteById(id);

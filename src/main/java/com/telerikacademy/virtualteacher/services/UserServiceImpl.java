@@ -1,10 +1,16 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.exceptions.auth.AuthException;
+import com.telerikacademy.virtualteacher.exceptions.auth.InvalidTokenException;
+import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +20,15 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(ModelMapper modelMapper,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -34,9 +43,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> save(UserRequestDTO user) {
-        if (!isEmailAvailable(user.getEmail()))
+        throw new InvalidTokenException("toq e noviq");
+
+       /* if (!isEmailAvailable(user.getEmail()))
             return Optional.empty();
-        return Optional.of(userRepository.save(modelMapper.map(user, User.class)));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return Optional.of(userRepository.save(modelMapper.map(user, User.class)));*/
     }
 
     @Override
@@ -44,8 +56,20 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    //---EOF interface methods
     private boolean isEmailAvailable(String email) {
         return findAll().stream()
                 .noneMatch(user -> user.getEmail().equals(email));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return findByEmail(username);
     }
 }

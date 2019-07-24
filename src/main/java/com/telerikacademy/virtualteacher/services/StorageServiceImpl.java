@@ -1,7 +1,7 @@
 package com.telerikacademy.virtualteacher.services;
 
-import com.telerikacademy.virtualteacher.exceptions.FileNotFoundException;
-import com.telerikacademy.virtualteacher.exceptions.StorageException;
+import com.telerikacademy.virtualteacher.exceptions.storage.FileNotFoundException;
+import com.telerikacademy.virtualteacher.exceptions.storage.StorageException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -58,17 +58,6 @@ public class StorageServiceImpl implements StorageService {
         return filename;
     }
 
-    @Override
-    public Stream<Path> loadAll() {
-        try {
-            return Files.walk(this.rootLocation, 1)
-                    .filter(path -> !path.equals(this.rootLocation))
-                    .map(this.rootLocation::relativize);
-        } catch (IOException e) {
-            throw new StorageException("Failed to read stored files", e);
-        }
-
-    }
 
     @Override
     public Path load(String filename) {
@@ -91,8 +80,4 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
-    @Override
-    public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
-    }
 }

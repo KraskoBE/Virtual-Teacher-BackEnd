@@ -1,4 +1,4 @@
-package com.telerikacademy.virtualteacher.exceptions;
+package com.telerikacademy.virtualteacher.exceptions.storage;
 
 public class StorageException extends RuntimeException {
 

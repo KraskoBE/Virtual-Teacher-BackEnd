@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
 public class UserResponseDTO {
     private Long id;
 
