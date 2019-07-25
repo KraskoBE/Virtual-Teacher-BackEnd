@@ -43,12 +43,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> save(UserRequestDTO user) {
-        throw new InvalidTokenException("toq e noviq");
-
-       /* if (!isEmailAvailable(user.getEmail()))
+        if (!isEmailAvailable(user.getEmail()))
             return Optional.empty();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return Optional.of(userRepository.save(modelMapper.map(user, User.class)));*/
+        return Optional.of(userRepository.save(modelMapper.map(user, User.class)));
     }
 
     @Override

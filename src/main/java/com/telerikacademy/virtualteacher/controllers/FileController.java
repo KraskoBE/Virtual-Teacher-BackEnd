@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.models.FileResponse;
 import com.telerikacademy.virtualteacher.services.StorageService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,10 @@ import org.springframework.core.io.Resource;
 
 @RestController
 @RequestMapping("/api/file")
+@AllArgsConstructor
 public class FileController {
 
     private StorageService storageService;
-
-    public FileController(StorageService storageService) {
-        this.storageService = storageService;
-    }
 
     @PostMapping("/upload")
     @ResponseBody
