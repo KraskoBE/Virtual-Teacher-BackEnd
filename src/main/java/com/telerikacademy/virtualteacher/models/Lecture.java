@@ -28,17 +28,12 @@ class Lecture {
     @Column(name = "lecture_id")
     private Long id;
 
+    @Column(name= "inner_id")
+    private Long innerId;
+
     @ManyToOne
     @JoinColumn(name="course", nullable = false)
     private Course course;
-
-    @OneToOne
-    @JoinColumn(name = "previous_lecture")
-    private Lecture previous;
-
-    @OneToOne
-    @JoinColumn(name = "next_lecture")
-    private Lecture next;
 
     @NotBlank
     @Size(min = 3, max = 25)

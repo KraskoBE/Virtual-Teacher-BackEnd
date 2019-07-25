@@ -1,13 +1,11 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
-import com.telerikacademy.virtualteacher.exceptions.auth.AuthException;
-import com.telerikacademy.virtualteacher.exceptions.auth.InvalidTokenException;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,20 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service("UserService")
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserServiceImpl(ModelMapper modelMapper,
-                           UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
-        this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public List<User> findAll() {

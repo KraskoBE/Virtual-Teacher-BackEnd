@@ -3,8 +3,8 @@ package com.telerikacademy.virtualteacher.controllers;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.services.UserService;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +21,11 @@ import java.util.stream.Collectors;
                 RequestMethod.DELETE})
 @RestController
 @RequestMapping("/api/users")
+@AllArgsConstructor
 public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;
 
-    @Autowired
-    public UserController(ModelMapper modelMapper,
-                          UserService userService) {
-        this.modelMapper = modelMapper;
-        this.userService = userService;
-    }
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping
@@ -48,7 +43,7 @@ public class UserController {
         return userService.findById(id)
                 .map(record -> modelMapper.map(record, UserResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))
-                .orElseThrow(()-> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @PreAuthorize("hasRole('Admin')")

@@ -26,7 +26,7 @@ class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
     private Long id;
-
+    
     @NotBlank
     @Size(min = 3, max = 25)
     @Column(name = "name")
@@ -41,10 +41,6 @@ class Course {
     @ManyToOne
     @JoinColumn(name = "creator")
     private User creator;
-
-    @OneToOne
-    @JoinColumn(name = "last_lecture")
-    private Lecture last;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

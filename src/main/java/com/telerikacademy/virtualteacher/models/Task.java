@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Entity
 @Where(clause = "enabled=1")
-@Table(name = "assignments")
-class Assignment {
+@Table(name = "tasks")
+class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "assignment_id")
+    @Column(name = "task_id")
     private Long id;
 
     @ManyToOne
@@ -28,15 +28,12 @@ class Assignment {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "lecture_id", nullable = false)
+    @JoinColumn(name="lecture_id", nullable = false)
     private Lecture lecture;
 
     @NotNull
     @Column(name = "file_path")
     private String filePath;
-
-    @Column(name = "grade")
-    private int grade;
 
     @NotNull
     @Column(name = "enabled")
