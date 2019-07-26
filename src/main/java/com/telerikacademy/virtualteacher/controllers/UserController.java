@@ -39,7 +39,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity findById(@PathVariable Long id) {
+    public ResponseEntity findById(@PathVariable final Long id) {
         return userService.findById(id)
                 .map(record -> modelMapper.map(record, UserResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))
@@ -48,7 +48,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable final Long id) {
         userService.deleteById(id);
     }
 

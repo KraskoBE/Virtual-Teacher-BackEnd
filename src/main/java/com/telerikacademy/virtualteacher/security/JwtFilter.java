@@ -40,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 Long userId = tokenProvider.getUserIdFromJWT(jwt);
                 UserDetails userDetails = customUserDetailsService.findById(userId)
-                        .orElseThrow(() -> new BadCredentialsException("User not found"));
+                        .orElseThrow(() -> new Exception("User not found"));
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

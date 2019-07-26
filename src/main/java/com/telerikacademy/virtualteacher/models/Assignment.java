@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Where(clause = "enabled=1")
 @Table(name = "assignments")
-class Assignment {
+public class Assignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "assignment_id")

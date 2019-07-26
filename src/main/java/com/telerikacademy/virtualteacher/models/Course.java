@@ -1,5 +1,6 @@
 package com.telerikacademy.virtualteacher.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.Set;
 @Entity
 @Where(clause = "enabled=1")
 @Table(name = "courses")
-class Course {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +46,7 @@ class Course {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private Set<Lecture> lectures = new HashSet<>();
 
