@@ -1,13 +1,12 @@
 package com.telerikacademy.virtualteacher.services;
 
-import com.telerikacademy.virtualteacher.models.Video;
+import com.telerikacademy.virtualteacher.models.Task;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface VideoService {
+public interface TaskService {
 
-    Video save(Long userId, Long lectureId, MultipartFile videoFile);
+    Task save(Long userId, Long lectureId, MultipartFile taskFile);
 
     Resource findByLectureId(Long lectureId);
-
 }

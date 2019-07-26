@@ -36,7 +36,28 @@ public class Task {
     private String filePath;
 
     @NotNull
+    @Column(name = "file_type")
+    private String fileType;
+
+    @NotNull
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @NotNull
+    @Column(name = "file_name")
+    private String fileName;
+
+    @NotNull
     @Column(name = "enabled")
     @JsonIgnore
     private boolean enabled = true;
+
+    public Task(User author, Lecture lecture, String filePath, String fileType, Long fileSize, String fileName) {
+        this.author = author;
+        this.lecture = lecture;
+        this.filePath = filePath;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
+        this.fileName = fileName;
+    }
 }
