@@ -19,7 +19,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Where(clause = "enabled=1")
 @Table(name = "courses")
 public class Course {
 
@@ -30,7 +29,7 @@ public class Course {
     
     @NotBlank
     @Size(min = 3, max = 25)
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @NotNull

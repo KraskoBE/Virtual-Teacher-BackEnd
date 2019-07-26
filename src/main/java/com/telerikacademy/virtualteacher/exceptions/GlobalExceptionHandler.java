@@ -4,6 +4,7 @@ import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedExcepti
 import com.telerikacademy.virtualteacher.exceptions.auth.InvalidTokenException;
 
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
+import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.storage.FileNotFoundException;
@@ -76,9 +77,15 @@ class GlobalExceptionHandler {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getLocalizedMessage());
     }
 
-    @ExceptionHandler({RuntimeException.class})
+    @ExceptionHandler({AlreadyExistsException.class})
+    public void handleAlreadyExistsException(
+            AlreadyExistsException ex, HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_CONFLICT, ex.getLocalizedMessage());
+    }
+
+    /*@ExceptionHandler({RuntimeException.class})
     public void handleRuntimeException(
             RuntimeException ex, HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getLocalizedMessage());
-    }
+    }*/
 }

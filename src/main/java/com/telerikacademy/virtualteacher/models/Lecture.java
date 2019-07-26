@@ -33,6 +33,7 @@ public class Lecture {
 
     @ManyToOne
     @JoinColumn(name="course", nullable = false)
+    @JsonIgnore
     private Course course;
 
     @NotBlank

@@ -13,8 +13,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Where(clause = "enabled=1")
 @Table(name = "topics")
+public
 class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

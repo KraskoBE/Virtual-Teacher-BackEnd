@@ -3,6 +3,8 @@ package com.telerikacademy.virtualteacher.repositories;
 import com.telerikacademy.virtualteacher.models.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CourseRepository extends JpaRepository<Course, Long> {
+import java.util.Optional;
 
+public interface CourseRepository extends JpaRepository<Course, Long> {
+    Optional<Course> findByNameIgnoreCase(String name);
 }

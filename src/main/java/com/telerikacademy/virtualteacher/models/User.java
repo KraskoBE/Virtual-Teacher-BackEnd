@@ -43,6 +43,7 @@ public class User implements UserDetails {
 
     @NotNull
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @NotNull
@@ -60,6 +61,7 @@ public class User implements UserDetails {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -94,6 +96,7 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private boolean enabled = true;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
