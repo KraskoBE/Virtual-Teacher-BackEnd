@@ -39,8 +39,11 @@ public class Course {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "creator")
-    private User creator;
+    @JoinColumn(name = "author")
+    private User author;
+
+    @Column(name = "submitted")
+    private boolean submitted = false;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

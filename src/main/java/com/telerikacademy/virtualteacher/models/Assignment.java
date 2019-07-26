@@ -24,8 +24,8 @@ public class Assignment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "author")
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "lecture_id", nullable = false)

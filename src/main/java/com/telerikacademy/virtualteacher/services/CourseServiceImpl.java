@@ -23,6 +23,7 @@ public class CourseServiceImpl implements CourseService {
     private final TopicRepository topicRepository;
     private final ModelMapper modelMapper;
 
+
     @Override
     public List<Course> findAll() {
         return courseRepository.findAll();
@@ -39,7 +40,7 @@ public class CourseServiceImpl implements CourseService {
         checkIfAlreadyExists(course.getName());
 
         Course courseToSave = modelMapper.map(course, Course.class);
-        courseToSave.setCreator(user);
+        courseToSave.setAuthor(user);
         courseToSave.setTopic(findTopicById(course.getTopic()));
 
         return Optional.of(courseRepository.save(courseToSave));

@@ -50,8 +50,8 @@ public class Lecture {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "creator")
-    private User creator;
+    @JoinColumn(name = "author")
+    private User author;
 
     @OneToOne
     @JoinColumn(name= "video")

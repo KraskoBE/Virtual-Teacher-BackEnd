@@ -6,6 +6,9 @@ import com.telerikacademy.virtualteacher.models.Video;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.VideoService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/videos")
 @AllArgsConstructor
 public class VideoController {
-    private final VideoService videoService;
+    private VideoService videoService;
 
     @PostMapping
     public Video save(@RequestParam("file") MultipartFile file,
@@ -24,9 +27,14 @@ public class VideoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable(name = "id") Long videoId) {
-        return videoService.findByLectureId(videoId)
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElseThrow(() -> new NotFoundException("Video not found"));
+    @ResponseBody
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
+
+        Resource resource = videoService.findByLectureId(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }

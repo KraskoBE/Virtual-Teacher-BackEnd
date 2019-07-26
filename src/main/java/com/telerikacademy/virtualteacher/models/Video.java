@@ -23,8 +23,8 @@ public class Video {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "author")
+    private User author;
 
     @JsonIgnore
     @ManyToOne
@@ -43,16 +43,20 @@ public class Video {
     @Column(name = "file_size")
     private Long fileSize;
 
+    @Column(name = "file_name")
+    private String fileName;
+
     @NotNull
     @Column(name = "enabled")
     @JsonIgnore
     private boolean enabled = true;
 
-    public Video(User user, Lecture lecture, String filePath, String fileType, Long fileSize) {
-        this.user = user;
+    public Video(User author, Lecture lecture, String filePath, String fileType, Long fileSize, String fileName) {
+        this.author = author;
         this.lecture = lecture;
         this.filePath = filePath;
         this.fileType = fileType;
         this.fileSize = fileSize;
+        this.fileName = fileName;
     }
 }

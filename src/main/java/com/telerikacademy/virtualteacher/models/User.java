@@ -72,7 +72,7 @@ public class User implements UserDetails {
     private Collection<Role> roles;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "author")
     private Set<Course> createdCourses = new HashSet<>();
 
     @JsonIgnore
@@ -80,7 +80,7 @@ public class User implements UserDetails {
     private Set<Course> enrolledCourses = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "author")
     private Set<Lecture> createdLectures = new HashSet<>();
 
     @JsonIgnore
@@ -88,7 +88,7 @@ public class User implements UserDetails {
     private Set<Lecture> finishedLectures = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "author")
     private Set<Assignment> assignments = new HashSet<>();
 
     @JsonIgnore
