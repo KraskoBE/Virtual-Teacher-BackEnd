@@ -17,35 +17,11 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Where(clause = "enabled=1")
 @Table(name = "assignments")
-public class Assignment {
+public class Assignment extends StorageFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "assignment_id")
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "author")
-    private User author;
-
-    @ManyToOne
-    @JoinColumn(name = "lecture_id", nullable = false)
-    private Lecture lecture;
-
-    @NotNull
-    @Column(name = "file_path")
-    private String filePath;
-
-    @NotNull
-    @Column(name = "file_type")
-    private String fileType;
-
-    @NotNull
-    @Column(name = "file_size")
-    private Long fileSize;
-
-    @NotNull
-    @Column(name = "file_name")
-    private String fileName;
 
     @Column(name = "grade")
     private int grade;
