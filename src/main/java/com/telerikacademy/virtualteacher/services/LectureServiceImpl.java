@@ -47,9 +47,10 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public Optional<Lecture> save(LectureRequestDTO lecture, User user, MultipartFile videoFile, MultipartFile taskFile) {
+    public Optional<Lecture> save(Course course, LectureRequestDTO lecture, User user, MultipartFile videoFile, MultipartFile taskFile) {
 
         checkIfAlreadyExists(lecture.getName());
+
 
         Lecture lectureToSave = modelMapper.map(lecture, Lecture.class);
 
@@ -58,6 +59,7 @@ public class LectureServiceImpl implements LectureService {
         lectureToSave.setAuthor(user);
         lectureToSave.setVideo(video);
         lectureToSave.setTask(task);
+        lectureToSave.setCourse(course);
 
         return Optional.of(lectureToSave);
     }
