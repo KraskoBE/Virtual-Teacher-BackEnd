@@ -1,6 +1,7 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -20,4 +21,6 @@ public interface UserService extends UserDetailsService {
     void deleteById(Long id);
 
     User findByEmail(String email);
+
+    Optional<Course> enrollCourse(Long userId, Long courseId);
 }

@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
+import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -44,6 +45,12 @@ public class UserController {
                 .map(record -> modelMapper.map(record, UserResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @PostMapping("/enroll")
+    public ResponseEntity enrollCourse(@RequestParam("courseId") Long courseId,
+                                       @RequestParam("userId") Long userId) {
+        return ResponseEntity.ok().body(userService.enrollCourse(userId, courseId));
     }
 
     @PreAuthorize("hasRole('Admin')")
