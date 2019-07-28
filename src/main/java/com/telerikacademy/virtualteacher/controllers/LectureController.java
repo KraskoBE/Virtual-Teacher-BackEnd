@@ -1,7 +1,6 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 
-import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.request.LectureRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Course;
@@ -24,20 +23,12 @@ public class LectureController {
     private final LectureService lectureService;
     private final CourseService courseService;
 
+    
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity save(@Valid @ModelAttribute LectureRequestDTO lectureRequestDTO,
+                                   @CurrentUser User user) {
 
-    //TODO still getting unsupported media types here
-    @PostMapping
-    public ResponseEntity save(@Valid @RequestPart LectureRequestDTO lecture,
-                               @RequestParam( value = "courseId" ) Long courseId,
-                               @CurrentUser User user,
-                               @RequestParam(value = "videoFile") MultipartFile videoFile,
-                               @RequestParam(value = "taskFile") MultipartFile taskFile) {
-
-        Optional<Course> course = courseService.findById(courseId);
-        if (!course.isPresent()) throw new NotFoundException("Course could not be found ");
-
-
-        return lectureService.save(course.get(), lecture,user,videoFile,taskFile)
+        return lectureService.save(lectureRequestDTO, user)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.badRequest().build());
 

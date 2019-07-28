@@ -80,7 +80,7 @@ public class User implements UserDetails {
     private Set<Course> enrolledCourses = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<Lecture> createdLectures = new HashSet<>();
 
     @JsonIgnore
