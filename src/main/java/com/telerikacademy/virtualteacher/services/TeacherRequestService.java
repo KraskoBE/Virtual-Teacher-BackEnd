@@ -1,7 +1,6 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.models.TeacherRequest;
-import com.telerikacademy.virtualteacher.models.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +11,13 @@ public interface TeacherRequestService {
 
     Optional<TeacherRequest> findById(Long id);
 
-    Optional<TeacherRequest> findByUser(User user);
+    Optional<TeacherRequest> findByUserId(Long userId);
 
-    void deleteById();
+    void deleteById(Long id);
 
-    Optional<TeacherRequest> accept(Long teacherRequestId);
+    void deleteByUserId(Long userId);
+
+    Optional<TeacherRequest> acceptById(Long Id);
+
+    Optional<TeacherRequest> acceptByUserId(Long userId);
 }
