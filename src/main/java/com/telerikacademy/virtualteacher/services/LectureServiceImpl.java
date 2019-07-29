@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.LectureRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
+import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import lombok.AllArgsConstructor;
@@ -20,8 +21,9 @@ public class LectureServiceImpl implements LectureService {
 
     private final VideoService videoService;
     private final TaskService taskService;
+    private final CourseService courseService;
 
-    private final ModelMapper modelMapper;
+    //private final ModelMapper modelMapper;
 
     @Override
     public List<Lecture> findAll() {
@@ -32,7 +34,7 @@ public class LectureServiceImpl implements LectureService {
     public Optional<List<Lecture>> findAllByCourse(Course course) {
         List<Lecture> lectures = lectureRepository.findAll()
                 .stream()
-                .filter( x -> x.getCourse().getId().equals(course.getId()))
+                .filter(x -> x.getCourse().getId().equals(course.getId()))
                 .collect(Collectors.toList());
         if (!lectures.isEmpty()) {
             return Optional.of(lectures);
@@ -42,26 +44,33 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public Optional<Lecture> findById(Long lectureId){
+    public Optional<Lecture> findById(Long lectureId) {
         return lectureRepository.findById(lectureId);
     }
 
-    @Override
-    public Optional<Lecture> save(Course course, LectureRequestDTO lecture, User user, MultipartFile videoFile, MultipartFile taskFile) {
+    @Override // TODO do with modelMapper without breaking everything
+    public Optional<Lecture> save(LectureRequestDTO lectureRequestDTO, User user) {
+        checkIfAlreadyExists(lectureRequestDTO.getName());
 
-        checkIfAlreadyExists(lecture.getName());
+        Course course = getCourse(lectureRequestDTO.getCourseId());
 
+        Lecture lectureToSave = new Lecture();
 
-        Lecture lectureToSave = modelMapper.map(lecture, Lecture.class);
-
-        Video video = videoService.save(user.getId(), lectureToSave.getId(), videoFile);
-        Task task = taskService.save(user.getId(), lectureToSave.getId(), taskFile);
+        lectureToSave.setName(lectureRequestDTO.getName());
+        lectureToSave.setDescription(lectureRequestDTO.getDescription());
+        lectureToSave.setInnerId((long) course.getLectures().size() + 1);
         lectureToSave.setAuthor(user);
-        lectureToSave.setVideo(video);
-        lectureToSave.setTask(task);
         lectureToSave.setCourse(course);
 
-        return Optional.of(lectureToSave);
+        lectureRepository.save(lectureToSave);
+
+        Video video = videoService.save(user.getId(), lectureToSave.getId(), lectureRequestDTO.getVideoFile());
+        Task task = taskService.save(user.getId(), lectureToSave.getId(), lectureRequestDTO.getTaskFile());
+
+        lectureToSave.setVideo(video);
+        lectureToSave.setTask(task);
+
+        return Optional.of(lectureRepository.save(lectureToSave));
     }
 
     private void checkIfAlreadyExists(String lectureName) {
@@ -70,4 +79,8 @@ public class LectureServiceImpl implements LectureService {
         }
     }
 
+    private Course getCourse(Long courseId) {
+        return courseService.findById(courseId)
+                .orElseThrow(() -> new NotFoundException(String.format("Course with ID:%d not found", courseId)));
+    }
 }

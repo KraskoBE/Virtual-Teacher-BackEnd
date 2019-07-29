@@ -1,18 +1,12 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
-import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
-import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.User;
-import com.telerikacademy.virtualteacher.models.Video;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.CourseService;
-import com.telerikacademy.virtualteacher.services.VideoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 

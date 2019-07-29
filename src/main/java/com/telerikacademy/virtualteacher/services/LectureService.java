@@ -17,5 +17,5 @@ public interface LectureService {
 
     Optional<Lecture> findById(Long lectureId);
 
-    Optional<Lecture> save(Course course, LectureRequestDTO lecture, User user, MultipartFile videoFile, MultipartFile taskFile);
+    Optional<Lecture> save(LectureRequestDTO lecture, User user);
 }

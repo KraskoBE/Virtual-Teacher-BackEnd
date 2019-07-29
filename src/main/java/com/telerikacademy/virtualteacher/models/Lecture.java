@@ -28,11 +28,11 @@ public class Lecture {
     @Column(name = "lecture_id")
     private Long id;
 
-    @Column(name= "inner_id")
+    @Column(name = "inner_id")
     private Long innerId;
 
     @ManyToOne
-    @JoinColumn(name="course", nullable = false)
+    @JoinColumn(name = "course", nullable = false)
     @JsonIgnore
     private Course course;
 
@@ -44,8 +44,8 @@ public class Lecture {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @OneToOne
-    @JoinColumn(name= "task")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "task")
     private Task task;
 
     @NotNull
@@ -54,7 +54,7 @@ public class Lecture {
     private User author;
 
     @OneToOne
-    @JoinColumn(name= "video")
+    @JoinColumn(name = "video")
     private Video video;
 
     @ManyToMany
@@ -71,4 +71,21 @@ public class Lecture {
     @Column(name = "enabled")
     @JsonIgnore
     private boolean enabled = true;
+
+    @Override
+    public String toString() {
+        return "Lecture{" +
+                "id=" + id + '\n' +
+                ", innerId=" + innerId +'\n' +
+                ", course=" + course +'\n' +
+                ", name='" + name + '\'' +'\n' +
+                ", description='" + description + '\'' +'\n' +
+                ", task=" + task +'\n' +
+                ", author=" + author +'\n' +
+                ", video=" + video +'\n' +
+                ", users=" + users +'\n' +
+                ", assignments=" + assignments +'\n' +
+                ", enabled=" + enabled +'\n' +
+                '}';
+    }
 }

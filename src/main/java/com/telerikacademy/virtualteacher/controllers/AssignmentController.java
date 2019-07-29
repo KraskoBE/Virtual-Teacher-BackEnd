@@ -19,7 +19,7 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     public Assignment save(@RequestParam("file") MultipartFile file,
                            @RequestParam("lectureId") Long lectureId,
                            @CurrentUser User user) {
@@ -31,7 +31,7 @@ public class AssignmentController {
     public ResponseEntity<Resource> downloadFile(@PathVariable Long lectureId,
                                                  @PathVariable Long userId) {
 
-        Resource resource = assignmentService.findByLectureIdAndUserId(lectureId, userId);;
+        Resource resource = assignmentService.findByLectureIdAndUserId(lectureId, userId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
