@@ -1,5 +1,6 @@
 package com.telerikacademy.virtualteacher.exceptions;
 
+import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedException;
 import com.telerikacademy.virtualteacher.exceptions.auth.InvalidTokenException;
 
@@ -56,6 +57,12 @@ class GlobalExceptionHandler {
     public void handleBadCredentialsException(
             BadCredentialsException ex, HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    public void handleAccessDeniedException(
+            AccessDeniedException ex, HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getLocalizedMessage());
     }
 
     //GLOBAL_EXCEPTIONS

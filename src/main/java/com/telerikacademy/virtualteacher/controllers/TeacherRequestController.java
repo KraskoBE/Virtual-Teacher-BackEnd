@@ -17,15 +17,10 @@ public class TeacherRequestController {
     private final TeacherRequestService teacherRequestService;
 
     @PreAuthorize("hasRole('Admin')")
-    @PostMapping
-    public ResponseEntity<TeacherRequest> accept(@RequestParam(value = "teacherRequestId", required = false) Long teacherRequestId,
-                                                 @RequestParam(value = "userId", required = false) Long userId) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<TeacherRequest> accept(@PathVariable(name = "userId") Long userId) {
 
-        if (teacherRequestId != null) {
-            return teacherRequestService.acceptById(teacherRequestId)
-                    .map(record -> ResponseEntity.ok().body(record))
-                    .orElseThrow(() -> new BadRequestException("Cannot be accepted"));
-        } else if (userId != null) {
+        if (userId != null) {
             return teacherRequestService.acceptByUserId(userId)
                     .map(record -> ResponseEntity.ok().body(record))
                     .orElseThrow(() -> new BadRequestException("Cannot be accepted"));
@@ -36,13 +31,10 @@ public class TeacherRequestController {
     }
 
     @PreAuthorize("hasRole('Admin')")
-    @DeleteMapping
-    public void deny(@RequestParam(value = "teacherRequestId", required = false) Long teacherRequestId,
-                                                 @RequestParam(value = "userId", required = false) Long userId) {
+    @DeleteMapping("/{userId}")
+    public void deny(@PathVariable (name = "userId") Long userId) {
 
-        if (teacherRequestId != null) {
-            teacherRequestService.deleteById(teacherRequestId);
-        } else if (userId != null) {
+        if (userId != null) {
             teacherRequestService.deleteByUserId(userId);
         } else {
             throw new NotFoundException("TeacherRequest not found");

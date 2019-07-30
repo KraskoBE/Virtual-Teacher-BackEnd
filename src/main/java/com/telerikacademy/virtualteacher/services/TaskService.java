@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface TaskService {
 
-    Task save(Long userId, Long lectureId, MultipartFile taskFile);
+    Task save(Long authorId, Long lectureId, MultipartFile taskFile);
 
     Resource findByLectureId(Long lectureId);
 }

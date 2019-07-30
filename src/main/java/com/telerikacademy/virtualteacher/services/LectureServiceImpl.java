@@ -4,11 +4,10 @@ import com.telerikacademy.virtualteacher.dtos.request.LectureRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
+import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class LectureServiceImpl implements LectureService {
 
     private final VideoService videoService;
     private final TaskService taskService;
-    private final CourseService courseService;
+    private final CourseRepository courseRepository;
 
     //private final ModelMapper modelMapper;
 
@@ -80,7 +79,7 @@ public class LectureServiceImpl implements LectureService {
     }
 
     private Course getCourse(Long courseId) {
-        return courseService.findById(courseId)
+        return courseRepository.findById(courseId)
                 .orElseThrow(() -> new NotFoundException(String.format("Course with ID:%d not found", courseId)));
     }
 }

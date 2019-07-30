@@ -28,4 +28,8 @@ public class TeacherRequest {
     @NotNull
     private boolean accepted = false;
 
+    public TeacherRequest(User user) {
+        this.user = user;
+    }
+
 }

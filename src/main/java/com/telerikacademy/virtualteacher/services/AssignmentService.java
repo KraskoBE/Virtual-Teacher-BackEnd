@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface AssignmentService {
 
-    Assignment save(Long userId, Long lectureId, MultipartFile assignmentFile);
+    Assignment save(Long authorId, Long lectureId, MultipartFile assignmentFile);
 
     Resource findByLectureIdAndUserId(Long lectureId, Long userId);
 }

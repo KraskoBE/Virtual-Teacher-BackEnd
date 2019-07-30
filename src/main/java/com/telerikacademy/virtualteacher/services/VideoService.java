@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface VideoService {
 
-    Video save(Long userId, Long lectureId, MultipartFile videoFile);
+    Video save(Long authorId, Long lectureId, MultipartFile videoFile);
 
     Resource findByLectureId(Long lectureId);
 

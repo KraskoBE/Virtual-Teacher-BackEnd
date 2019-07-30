@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface TeacherRequestService {
 
+    TeacherRequest save(Long userId);
+
     List<TeacherRequest> findAll();
 
     Optional<TeacherRequest> findById(Long id);

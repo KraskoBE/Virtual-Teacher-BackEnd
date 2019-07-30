@@ -1,22 +1,19 @@
 package com.telerikacademy.virtualteacher.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.telerikacademy.virtualteacher.models.Picture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Entity;
 import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserResponseDTO {
-    private Long id;
+public class AuthenticationResponseDTO {
 
     private String email;
 
@@ -28,5 +25,5 @@ public class UserResponseDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-    private Picture picture;
+    private String token;
 }
