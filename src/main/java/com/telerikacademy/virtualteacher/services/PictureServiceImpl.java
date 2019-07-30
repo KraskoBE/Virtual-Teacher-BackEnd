@@ -1,7 +1,6 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
-import com.telerikacademy.virtualteacher.models.Lecture;
 import com.telerikacademy.virtualteacher.models.Picture;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.PictureRepository;

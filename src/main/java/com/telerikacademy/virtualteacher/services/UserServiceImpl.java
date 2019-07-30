@@ -1,6 +1,7 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
@@ -88,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> updatePicture(Long userId, User author, MultipartFile pictureFile) {
         if (!author.getId().equals(userId) && !userHasRole(author, "Admin"))
-            throw new BadRequestException("You have no authority to edit this user's picture");
+            throw new AccessDeniedException("You have no authority to edit this user's picture");
 
         User toUpdate = getUser(userId);
         Picture newPicture = pictureService.save(author.getId(), userId, pictureFile);

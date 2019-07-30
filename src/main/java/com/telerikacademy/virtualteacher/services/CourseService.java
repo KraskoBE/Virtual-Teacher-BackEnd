@@ -10,11 +10,11 @@ import java.util.Optional;
 public interface CourseService {
     List<Course> findAll();
 
-    Optional<Course> findById(Long id);
+    Optional<Course> findById(Long courseId, User user);
 
     Optional<Course> save(CourseRequestDTO course, User user);
 
     //Optional<Course> update(Long id, Course course);
 
-    void deleteById(Long id);
+    void deleteById(Long courseId);
 }

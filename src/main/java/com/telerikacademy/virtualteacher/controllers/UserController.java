@@ -60,7 +60,7 @@ public class UserController {
     @PutMapping("/{id}/updatePicture")
     public ResponseEntity changePicture(@PathVariable(name = "id") Long userId,
                                         @CurrentUser User user,
-                                        @RequestParam(name="picture") MultipartFile pictureFile) {
+                                        @RequestParam(name = "picture") MultipartFile pictureFile) {
         return userService.updatePicture(userId, user, pictureFile)
                 .map(record -> modelMapper.map(record, UserResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))

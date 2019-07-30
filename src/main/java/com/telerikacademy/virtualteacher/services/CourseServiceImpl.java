@@ -1,9 +1,11 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
+import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Course;
+import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.Topic;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
@@ -23,15 +25,18 @@ public class CourseServiceImpl implements CourseService {
     private final TopicRepository topicRepository;
     private final ModelMapper modelMapper;
 
-
     @Override
     public List<Course> findAll() {
         return courseRepository.findAll();
     }
 
     @Override
-    public Optional<Course> findById(Long id) {
-        return courseRepository.findById(id);
+    public Optional<Course> findById(Long courseId, User user) {
+
+        if (!hasEnrolled(user, courseId) && !hasRole(user, "Admin"))
+            throw new AccessDeniedException("You have no access to this course");
+
+        return courseRepository.findById(courseId);
     }
 
     @Override
@@ -47,7 +52,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long courseId) {
 
     }
 
@@ -59,5 +64,17 @@ public class CourseServiceImpl implements CourseService {
     private void checkIfAlreadyExists(String courseName) {
         if (courseRepository.findByNameIgnoreCase(courseName).isPresent())
             throw new AlreadyExistsException("Course with that name already exists");
+    }
+
+    private boolean hasEnrolled(User user, Long courseId) {
+        return user.getEnrolledCourses().stream()
+                .map(Course::getId)
+                .anyMatch(courseId::equals);
+    }
+
+    private boolean hasRole(User user, String roleName) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(role -> role.equals(roleName));
     }
 }

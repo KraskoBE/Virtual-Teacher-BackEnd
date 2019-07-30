@@ -63,7 +63,7 @@ public class User implements UserDetails {
     private LocalDate birthDate;
 
     @OneToOne
-    @JoinColumn(name="picture")
+    @JoinColumn(name = "picture")
     private Picture picture;
 
     @JsonIgnore
@@ -77,23 +77,23 @@ public class User implements UserDetails {
     private Collection<Role> roles = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private Set<Course> createdCourses = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Course> enrolledCourses = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Lecture> createdLectures = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Lecture> finishedLectures = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private Set<Assignment> assignments = new HashSet<>();
 
     @JsonIgnore
