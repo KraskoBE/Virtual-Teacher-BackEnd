@@ -57,7 +57,6 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
             throw new BadRequestException("Already a teacher");
         }
 
-
         user.getRoles().add(teacher);
         userRepository.save(user);
 

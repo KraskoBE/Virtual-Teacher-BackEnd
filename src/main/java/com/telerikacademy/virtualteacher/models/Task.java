@@ -10,7 +10,6 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -23,17 +22,18 @@ public class Task extends StorageFile {
     @Column(name = "task_id")
     private Long id;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "lecture_id", nullable = false)
+    @JsonIgnore
+    Lecture lecture;
+
     @NotNull
     @Column(name = "enabled")
     @JsonIgnore
     private boolean enabled = true;
 
     public Task(User author, Lecture lecture, String filePath, String fileType, Long fileSize, String fileName) {
-        this.author = author;
+        super(filePath, fileType, fileSize, fileName, author);
         this.lecture = lecture;
-        this.filePath = filePath;
-        this.fileType = fileType;
-        this.fileSize = fileSize;
-        this.fileName = fileName;
     }
 }

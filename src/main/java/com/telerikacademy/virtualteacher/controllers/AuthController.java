@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.AuthenticationRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.dtos.response.AuthenticationResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedException;
 import com.telerikacademy.virtualteacher.security.JwtProvider;
@@ -17,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000",
         allowCredentials = "true",
@@ -32,7 +35,7 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtProvider provider;
+    private final JwtProvider jwtProvider;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
@@ -44,19 +47,34 @@ public class AuthController {
                         userAuth.getEmail(),
                         userAuth.getPassword())
         );
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = provider.generateToken(authentication);
-        return ResponseEntity.ok(jwt);
+        String token = jwtProvider.generateToken(authentication);
+
+        Map<String, String> responseMap = new HashMap<>();
+        responseMap.put("email", userAuth.getEmail());
+        responseMap.put("token", token);
+
+        return ResponseEntity.ok().body(responseMap);
     }
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
-    public ResponseEntity register(@Valid @RequestBody final UserRequestDTO user) {
-        return userService.save(user)
-                .map(record -> modelMapper.map(record, UserResponseDTO.class))
-                .map(record -> ResponseEntity.ok().body(record))
+    public ResponseEntity register(@Valid @RequestBody final UserRequestDTO userRequestDTO) {
+        AuthenticationResponseDTO userResponse = userService.save(userRequestDTO)
+                .map(record -> modelMapper.map(record, AuthenticationResponseDTO.class))
                 .orElseThrow(() -> new EmailAlreadyUsedException("Email already in use"));
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        userRequestDTO.getEmail(),
+                        userRequestDTO.getPassword())
+        );
+
+        String token = jwtProvider.generateToken(authentication);
+
+        userResponse.setToken(token);
+
+        return ResponseEntity.ok().body(userResponse);
     }
 }

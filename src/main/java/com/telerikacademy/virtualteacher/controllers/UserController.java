@@ -3,12 +3,15 @@ package com.telerikacademy.virtualteacher.controllers;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
+import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,6 +54,17 @@ public class UserController {
     public ResponseEntity enrollCourse(@RequestParam("courseId") Long courseId,
                                        @RequestParam("userId") Long userId) {
         return ResponseEntity.ok().body(userService.enrollCourse(userId, courseId));
+    }
+
+    @PreAuthorize("hasRole('Student')")
+    @PutMapping("/{id}/updatePicture")
+    public ResponseEntity changePicture(@PathVariable(name = "id") Long userId,
+                                        @CurrentUser User user,
+                                        @RequestParam(name="picture") MultipartFile pictureFile) {
+        return userService.updatePicture(userId, user, pictureFile)
+                .map(record -> modelMapper.map(record, UserResponseDTO.class))
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElseThrow(() -> new BadRequestException("Picture could not be updated"));
     }
 
     @PreAuthorize("hasRole('Admin')")

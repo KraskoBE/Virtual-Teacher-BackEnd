@@ -46,8 +46,8 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
 
     //Beginning of interface methods
     @Override
-    public Task save(Long userId, Long lectureId, MultipartFile taskFile) {
-        User user = getUser(userId);
+    public Task save(Long authorId, Long lectureId, MultipartFile taskFile) {
+        User author = getUser(authorId);
         Lecture lecture = getLecture(lectureId);
 
         String taskType = allowedTypes.get(taskFile.getContentType());
@@ -56,7 +56,7 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
 
         return taskRepository.save(
                 new Task(
-                        user,
+                        author,
                         lecture,
                         taskUrl,
                         taskFile.getContentType(),

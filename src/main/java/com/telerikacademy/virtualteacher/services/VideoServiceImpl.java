@@ -44,8 +44,8 @@ public class VideoServiceImpl extends StorageServiceBase implements VideoService
 
     //Beginning of interface methods
     @Override
-    public Video save(Long userId, Long lectureId, MultipartFile videoFile) {
-        User user = getUser(userId);
+    public Video save(Long authorId, Long lectureId, MultipartFile videoFile) {
+        User author = getUser(authorId);
         Lecture lecture = getLecture(lectureId);
 
         String fileType = allowedTypes.get(videoFile.getContentType());
@@ -54,7 +54,7 @@ public class VideoServiceImpl extends StorageServiceBase implements VideoService
 
         return videoRepository.save(
                 new Video(
-                        user,
+                        author,
                         lecture,
                         fileUrl,
                         videoFile.getContentType(),

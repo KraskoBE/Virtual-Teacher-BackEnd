@@ -39,6 +39,7 @@ public class UserRequestDTO {
     @NameConstraint
     private String lastName;
 
+    @NotNull
     @Past
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")

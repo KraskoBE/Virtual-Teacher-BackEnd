@@ -56,10 +56,15 @@ public class User implements UserDetails {
     @Size(max = 15)
     private String lastName;
 
+    @NotNull
     @Past
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
+
+    @OneToOne
+    @JoinColumn(name="picture")
+    private Picture picture;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -69,7 +74,7 @@ public class User implements UserDetails {
                     name = "user_id", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
-    private Collection<Role> roles;
+    private Collection<Role> roles = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "author")

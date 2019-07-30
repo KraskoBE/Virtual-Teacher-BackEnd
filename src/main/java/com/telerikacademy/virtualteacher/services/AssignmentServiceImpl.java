@@ -41,17 +41,17 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
     }
 
     @Override
-    public Assignment save(Long userId, Long lectureId, MultipartFile assignmentFile) {
-        User user = getUser(userId);
+    public Assignment save(Long authorId, Long lectureId, MultipartFile assignmentFile) {
+        User author = getUser(authorId);
         Lecture lecture = getLecture(lectureId);
 
         String fileType = allowedTypes.get(assignmentFile.getContentType());
-        String fileName = String.format("assignment_L%d_U%d.%s", lectureId, userId, fileType);
+        String fileName = String.format("assignment_L%d_U%d.%s", lectureId, authorId, fileType);
         String fileUrl = storeFile(assignmentFile, lectureId, fileName);
 
         return assignmentRepository.save(
                 new Assignment(
-                        user,
+                        author,
                         lecture,
                         fileUrl,
                         assignmentFile.getContentType(),
