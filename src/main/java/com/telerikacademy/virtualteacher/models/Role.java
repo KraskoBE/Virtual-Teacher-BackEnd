@@ -17,6 +17,10 @@ import java.util.Collection;
 @Table(name = "roles")
 public class Role {
 
+    public static final String STUDENT = "Student";
+    public static final String TEACHER = "Teacher";
+    public static final String ADMIN = "Admin";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
