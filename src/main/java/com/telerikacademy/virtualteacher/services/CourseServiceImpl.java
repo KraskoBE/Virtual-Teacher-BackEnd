@@ -3,6 +3,7 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
+import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.Role;
@@ -10,9 +11,11 @@ import com.telerikacademy.virtualteacher.models.Topic;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
+import com.telerikacademy.virtualteacher.security.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +34,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> findById(Long courseId, User user) {
+    public Optional<Course> findById(Long courseId) {
+        return courseRepository.findById(courseId);
+    }
+
+    @Override
+    public Optional<Course> findByIdAndUser(Long courseId, User user) {
 
         if (!hasEnrolled(user, courseId) && !hasRole(user, "Admin"))
             throw new AccessDeniedException("You have no access to this course");
@@ -53,6 +61,22 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void deleteById(Long courseId) {
+
+    }
+
+    @Override
+    public Optional<Course> enroll(Long courseId, User user) {
+        Course course = findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        if (course.getUsers().contains(user))
+            throw new BadRequestException("User is already enrolled to this course");
+
+        if (course.getAuthor().equals(user))
+            throw new BadRequestException("The author cannot enroll its own course");
+
+        course.getUsers().add(user);
+        return Optional.of(courseRepository.save(course));
 
     }
 

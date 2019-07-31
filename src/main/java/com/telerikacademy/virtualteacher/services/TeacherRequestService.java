@@ -19,7 +19,5 @@ public interface TeacherRequestService {
 
     void deleteByUserId(Long userId);
 
-    Optional<TeacherRequest> acceptById(Long Id);
-
-    Optional<TeacherRequest> acceptByUserId(Long userId);
+    TeacherRequest acceptByUserId(Long userId);
 }

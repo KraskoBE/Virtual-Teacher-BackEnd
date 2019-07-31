@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
+import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
@@ -25,7 +26,7 @@ public class CourseController {
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable(name = "id") Long courseId,
                                    @CurrentUser User user) {
-        return courseService.findById(courseId, user)
+        return courseService.findByIdAndUser(courseId, user)
                 .map(record -> modelMapper.map(record, CourseResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElseThrow(() -> new NotFoundException("Course not found"));
@@ -39,6 +40,15 @@ public class CourseController {
                 .map(record -> modelMapper.map(record, CourseResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.badRequest().build());
+    }
+
+    @PostMapping("/enroll")
+    public ResponseEntity enrollCourse(@RequestParam("courseId") Long courseId,
+                                        @CurrentUser User user){
+        return courseService.enroll(courseId, user)
+                .map(record-> modelMapper.map(record, CourseResponseDTO.class))
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElseThrow(()-> new BadRequestException("Couldn't enroll course"));
     }
 
 }

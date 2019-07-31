@@ -13,9 +13,11 @@ public interface LectureService {
 
     List<Lecture> findAll();
 
+    Optional<Lecture> findById(Long lectureId);
+
     Optional<List<Lecture>> findAllByCourse(Course course);
 
-    Optional<Lecture> findById(Long lectureId);
+    Optional<Lecture> findByCourseAndInnerId(User user, Long courseId, Long lectureId);
 
     Optional<Lecture> save(LectureRequestDTO lecture, User user);
 }

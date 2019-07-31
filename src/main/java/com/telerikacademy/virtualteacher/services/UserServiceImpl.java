@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CourseRepository courseRepository;
+    private final CourseService courseService;
     private final PictureService pictureService;
     private final RoleRepository roleRepository;
 
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-        addRole(user, "Student");
+        addRole(user, Role.Name.Student);
 
         return Optional.of(userRepository.save(user));
     }
@@ -73,8 +73,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<Course> enrollCourse(Long userId, Long courseId) {
-        Course course = getCourse(courseId);
-        User user = getUser(userId);
+        Course course = courseService.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        User user = findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         if (course.getUsers().contains(user)) {
             throw new BadRequestException("User is already enrolled to this course");
@@ -88,20 +91,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> updatePicture(Long userId, User author, MultipartFile pictureFile) {
-        if (!author.getId().equals(userId) && !userHasRole(author, "Admin"))
+        if (!author.getId().equals(userId) && !hasRole(author, Role.Name.Admin))
             throw new AccessDeniedException("You have no authority to edit this user's picture");
 
-        User toUpdate = getUser(userId);
+        User toUpdate = findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
         Picture newPicture = pictureService.save(author.getId(), userId, pictureFile);
         toUpdate.setPicture(newPicture);
 
         return Optional.of(userRepository.save(toUpdate));
     }
 
-    //---EOF interface methods
-    private boolean isEmailAvailable(String email) {
-        return findAll().stream()
-                .noneMatch(user -> user.getEmail().equals(email));
+    @Override
+    public void addRole(User user, Role.Name roleName) {
+        if (user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(roleName.toString()::equals))
+            return;
+        Role role = roleRepository.findByName(roleName.toString())
+                .orElseThrow(() -> new NotFoundException("Role not found"));
+        user.getRoles().add(role);
+        userRepository.save(user);
+    }
+
+    @Override
+    public boolean hasRole(User user, Role.Name roleName) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(roleName.toString()::equals);
     }
 
     @Override
@@ -109,26 +126,9 @@ public class UserServiceImpl implements UserService {
         return findByEmail(username);
     }
 
-    private Course getCourse(Long id) {
-        return courseRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Course with id:%d not found", id)));
-
-    }
-
-    private User getUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", id)));
-    }
-
-    private void addRole(User user, String roleName) {
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new NotFoundException(String.format("Role %s not found", roleName)));
-        user.getRoles().add(role);
-    }
-
-    private boolean userHasRole(User user, String role) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .anyMatch(r -> r.equals(role));
+    //---EOF interface methods
+    private boolean isEmailAvailable(String email) {
+        return findAll().stream()
+                .noneMatch(user -> user.getEmail().equals(email));
     }
 }

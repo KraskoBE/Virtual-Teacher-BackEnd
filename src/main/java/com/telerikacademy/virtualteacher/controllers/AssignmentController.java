@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.controllers;
 
 
 import com.telerikacademy.virtualteacher.models.Assignment;
+import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.AssignmentService;

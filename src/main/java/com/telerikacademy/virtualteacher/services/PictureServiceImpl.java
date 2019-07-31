@@ -4,7 +4,6 @@ import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Picture;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.PictureRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,15 +14,15 @@ import java.util.Optional;
 @Service("PictureService")
 public class PictureServiceImpl extends StorageServiceBase implements PictureService {
     private PictureRepository pictureRepository;
-    private UserRepository userRepository;
+    private UserService userService;
 
-    public PictureServiceImpl(PictureRepository pictureRepository, UserRepository userRepository) {
+    public PictureServiceImpl(PictureRepository pictureRepository, UserService userService) {
         super(
                 Paths.get("./uploads/pictures"),
                 "http://localhost:8080/api/pictures"
         );
         this.pictureRepository = pictureRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -33,7 +32,8 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
 
     @Override
     public Picture save(Long authorId, Long userId, MultipartFile pictureFile) {
-        User author = getUser(authorId);
+        User author = userService.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         String fileType = allowedTypes.get(pictureFile.getContentType());
         String fileName = String.format("picture_U%d.%s", userId, fileType);
@@ -57,16 +57,12 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
 
     @Override
     public Resource findByUserId(Long userId) {
-        User user = getUser(userId);
+        User user = userService.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
         Picture picture = pictureRepository.findByAuthor(user)
                 .orElseThrow(() -> new NotFoundException("Picture not found"));
 
         String fileName = picture.getFileName();
         return loadFileByName(fileName);
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", userId)));
     }
 }
