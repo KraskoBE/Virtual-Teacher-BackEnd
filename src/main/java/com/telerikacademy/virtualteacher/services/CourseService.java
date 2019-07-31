@@ -5,20 +5,18 @@ import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.User;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CourseService {
     List<Course> findAll();
 
-    Optional<Course> findById(Long courseId);
+    Course findById(Long courseId);
 
-    Optional<Course> findByIdAndUser(Long courseId, User user);
+    Course findByIdAndUser(Long courseId, User user);
 
-    Optional<Course> save(CourseRequestDTO course, User user);
+    Course save(CourseRequestDTO course, User author);
 
-    //Optional<Course> update(Long id, Course course);
+    //Course update(Long id, Course course);
 
     void deleteById(Long courseId);
 
-    Optional<Course> enroll(Long courseId, User user);
 }

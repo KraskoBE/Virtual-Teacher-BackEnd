@@ -1,7 +1,5 @@
 package com.telerikacademy.virtualteacher.controllers;
 
-import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
-import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.TeacherRequest;
 import com.telerikacademy.virtualteacher.services.TeacherRequestService;
 import lombok.AllArgsConstructor;
@@ -19,27 +17,15 @@ public class TeacherRequestController {
     @PreAuthorize("hasRole('Admin')")
     @PutMapping("/{userId}")
     public ResponseEntity<TeacherRequest> accept(@PathVariable(name = "userId") Long userId) {
-
-        if (userId != null) {
-            return teacherRequestService.acceptByUserId(userId)
-                    .map(record -> ResponseEntity.ok().body(record))
-                    .orElseThrow(() -> new BadRequestException("Cannot be accepted"));
-        } else {
-            throw new NotFoundException("TeacherRequest not found");
-        }
-
+        return ResponseEntity.ok().body(
+                teacherRequestService.acceptByUserId(userId)
+        );
     }
 
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/{userId}")
-    public void deny(@PathVariable (name = "userId") Long userId) {
-
-        if (userId != null) {
-            teacherRequestService.deleteByUserId(userId);
-        } else {
-            throw new NotFoundException("TeacherRequest not found");
-        }
-
+    public void deny(@PathVariable(name = "userId") Long userId) {
+        teacherRequestService.deleteByUserId(userId);
     }
 
 }

@@ -5,13 +5,11 @@ import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
-import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -31,27 +29,23 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public Optional<Lecture> findById(Long lectureId) {
-        return lectureRepository.findById(lectureId);
+    public Lecture findById(Long lectureId) {
+        return lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new NotFoundException("Lecture not found"));
     }
 
     @Override
-    public Optional<List<Lecture>> findAllByCourse(Course course) {
-        List<Lecture> lectures = lectureRepository.findAll()
+    public List<Lecture> findAllByCourse(Course course) {
+        return lectureRepository.findAll()
                 .stream()
                 .filter(x -> x.getCourse().getId().equals(course.getId()))
                 .collect(Collectors.toList());
-        if (!lectures.isEmpty()) {
-            return Optional.of(lectures);
-        } else {
-            return Optional.empty();
-        }
+
     }
 
     @Override
-    public Optional<Lecture> findByCourseAndInnerId(User user, Long courseId, Long lectureId) {
-        Course course = courseService.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+    public Lecture findByCourseAndInnerId(User user, Long courseId, Long lectureId) {
+        Course course = courseService.findById(courseId);
 
         Lecture lecture = course.getLectures().stream()
                 .filter(lecture1 -> lecture1.getInnerId().equals(lectureId))
@@ -64,33 +58,32 @@ public class LectureServiceImpl implements LectureService {
         if (!hasUserFinishedPrevious(user, course, lecture) && !userHasRole(user, "Admin"))
             throw new AccessDeniedException("You need to finish the previous lecture first");
 
-        return Optional.of(lecture);
+        return lecture;
     }
 
     @Override // TODO do with modelMapper without breaking everything
-    public Optional<Lecture> save(LectureRequestDTO lectureRequestDTO, User user) {
+    public Lecture save(LectureRequestDTO lectureRequestDTO, User author) {
         checkIfAlreadyExists(lectureRequestDTO.getName());
 
-        Course course = courseService.findById(lectureRequestDTO.getCourseId())
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+        Course course = courseService.findById(lectureRequestDTO.getCourseId());
 
         Lecture lectureToSave = new Lecture();
 
         lectureToSave.setName(lectureRequestDTO.getName());
         lectureToSave.setDescription(lectureRequestDTO.getDescription());
         lectureToSave.setInnerId((long) course.getLectures().size() + 1);
-        lectureToSave.setAuthor(user);
+        lectureToSave.setAuthor(author);
         lectureToSave.setCourse(course);
 
         lectureRepository.save(lectureToSave);
 
-        Video video = videoService.save(user.getId(), lectureToSave.getId(), lectureRequestDTO.getVideoFile());
-        Task task = taskService.save(user.getId(), lectureToSave.getId(), lectureRequestDTO.getTaskFile());
+        Video video = videoService.save(author.getId(), lectureToSave.getId(), lectureRequestDTO.getVideoFile());
+        Task task = taskService.save(author.getId(), lectureToSave.getId(), lectureRequestDTO.getTaskFile());
 
         lectureToSave.setVideo(video);
         lectureToSave.setTask(task);
 
-        return Optional.of(lectureRepository.save(lectureToSave));
+        return lectureRepository.save(lectureToSave);
     }
 
     private void checkIfAlreadyExists(String lectureName) {

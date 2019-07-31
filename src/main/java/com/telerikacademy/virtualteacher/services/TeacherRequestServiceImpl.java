@@ -6,16 +6,12 @@ import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.TeacherRequest;
 import com.telerikacademy.virtualteacher.models.User;
-import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.TeacherRequestRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service("TeacherRequestService")
 @AllArgsConstructor
@@ -26,8 +22,7 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
 
     @Override
     public TeacherRequest save(Long userId) {
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userService.findById(userId);
 
         checkIfAlreadyExists(user);
 
@@ -42,15 +37,16 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
     }
 
     @Override
-    public Optional<TeacherRequest> findById(Long id) {
-        return teacherRequestRepository.findById(id);
+    public TeacherRequest findById(Long id) {
+        return teacherRequestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TeacherRequest not found"));
     }
 
     @Override
-    public Optional<TeacherRequest> findByUserId(Long userId) {
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return teacherRequestRepository.findByUser(user);
+    public TeacherRequest findByUserId(Long userId) {
+        User user = userService.findById(userId);
+        return teacherRequestRepository.findByUser(user)
+                .orElseThrow(() -> new NotFoundException("TeacherRequest not found"));
     }
 
     @Override
@@ -61,18 +57,15 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
     @Transactional
     @Override
     public void deleteByUserId(Long userId) {
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userService.findById(userId);
         teacherRequestRepository.deleteByUser(user);
     }
 
     @Override
     public TeacherRequest acceptByUserId(Long userId) {
-        TeacherRequest teacherRequest = findByUserId(userId)
-                .orElseThrow(() -> new NotFoundException("Teacher request not found"));
+        TeacherRequest teacherRequest = findByUserId(userId);
 
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userService.findById(userId);
 
         if (userService.hasRole(user, Role.Name.Teacher))
             throw new BadRequestException("Already a teacher");

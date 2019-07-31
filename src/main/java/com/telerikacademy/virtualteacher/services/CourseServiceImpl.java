@@ -3,7 +3,6 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
-import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.Role;
@@ -11,19 +10,16 @@ import com.telerikacademy.virtualteacher.models.Topic;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
-import com.telerikacademy.virtualteacher.security.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service("CourseService")
 public class CourseServiceImpl implements CourseService {
+    private final UserService userService;
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
     private final ModelMapper modelMapper;
@@ -34,49 +30,34 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> findById(Long courseId) {
-        return courseRepository.findById(courseId);
+    public Course findById(Long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
     @Override
-    public Optional<Course> findByIdAndUser(Long courseId, User user) {
-
-        if (!hasEnrolled(user, courseId) && !hasRole(user, "Admin"))
+    public Course findByIdAndUser(Long courseId, User user) {
+        if (!hasEnrolled(user, courseId) &&
+                !userService.hasRole(user, Role.Name.Admin))
             throw new AccessDeniedException("You have no access to this course");
 
-        return courseRepository.findById(courseId);
+        return findById(courseId);
     }
 
     @Override
-    public Optional<Course> save(CourseRequestDTO course, User user) {
+    public Course save(CourseRequestDTO course, User author) {
 
         checkIfAlreadyExists(course.getName());
 
         Course courseToSave = modelMapper.map(course, Course.class);
-        courseToSave.setAuthor(user);
+        courseToSave.setAuthor(author);
         courseToSave.setTopic(findTopicById(course.getTopic()));
 
-        return Optional.of(courseRepository.save(courseToSave));
+        return courseRepository.save(courseToSave);
     }
 
     @Override
     public void deleteById(Long courseId) {
-
-    }
-
-    @Override
-    public Optional<Course> enroll(Long courseId, User user) {
-        Course course = findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
-
-        if (course.getUsers().contains(user))
-            throw new BadRequestException("User is already enrolled to this course");
-
-        if (course.getAuthor().equals(user))
-            throw new BadRequestException("The author cannot enroll its own course");
-
-        course.getUsers().add(user);
-        return Optional.of(courseRepository.save(course));
 
     }
 
@@ -94,11 +75,5 @@ public class CourseServiceImpl implements CourseService {
         return user.getEnrolledCourses().stream()
                 .map(Course::getId)
                 .anyMatch(courseId::equals);
-    }
-
-    private boolean hasRole(User user, String roleName) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .anyMatch(role -> role.equals(roleName));
     }
 }

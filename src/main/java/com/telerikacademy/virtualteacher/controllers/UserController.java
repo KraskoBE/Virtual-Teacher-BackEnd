@@ -1,8 +1,7 @@
 package com.telerikacademy.virtualteacher.controllers;
 
+import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
-import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
-import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.TeacherRequestService;
@@ -14,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.ws.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,21 +44,28 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("isAnonymous()")
     public ResponseEntity findById(@PathVariable final Long id) {
-        return userService.findById(id)
-                .map(record -> modelMapper.map(record, UserResponseDTO.class))
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.findById(id),
+                        UserResponseDTO.class)
+        );
     }
 
     @PostMapping("/enroll")
     public ResponseEntity enrollCourse(@RequestParam("courseId") Long courseId,
                                        @RequestParam("userId") Long userId) {
-        return ResponseEntity.ok().body(userService.enrollCourse(userId, courseId));
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.enrollCourse(userId, courseId),
+                        CourseResponseDTO.class)
+        );
     }
 
-    @PostMapping("/teacher_request/{id}")
+    @PostMapping("/teacherRequest/{id}")
     public ResponseEntity teacherRequest(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok().body(teacherRequestService.save(id));
+        return ResponseEntity.ok().body(
+                teacherRequestService.save(id)
+        );
     }
 
     @PreAuthorize("hasRole('Student')")
@@ -68,10 +73,11 @@ public class UserController {
     public ResponseEntity changePicture(@PathVariable(name = "id") Long userId,
                                         @CurrentUser User user,
                                         @RequestParam(name = "picture") MultipartFile pictureFile) {
-        return userService.updatePicture(userId, user, pictureFile)
-                .map(record -> modelMapper.map(record, UserResponseDTO.class))
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElseThrow(() -> new BadRequestException("Picture could not be updated"));
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.updatePicture(userId, user, pictureFile),
+                        UserResponseDTO.class)
+        );
     }
 
     @PreAuthorize("hasRole('Admin')")

@@ -4,7 +4,9 @@ import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Lecture;
 import com.telerikacademy.virtualteacher.models.Task;
 import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import com.telerikacademy.virtualteacher.repositories.TaskRepository;
+import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -16,21 +18,21 @@ import java.nio.file.Paths;
 public class TaskServiceImpl extends StorageServiceBase implements TaskService {
 
     private TaskRepository taskRepository;
-    private UserService userService;
-    private LectureService lectureService;
+    private UserRepository userRepository;
+    private LectureRepository lectureRepository;
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
-                           UserService userService,
-                           LectureService lectureService) {
+                           UserRepository userRepository,
+                           LectureRepository lectureRepository) {
         super(
                 Paths.get("./uploads/tasks"),
                 "http://localhost:8080/api/tasks"
         );
 
         this.taskRepository = taskRepository;
-        this.userService = userService;
-        this.lectureService = lectureService;
+        this.userRepository = userRepository;
+        this.lectureRepository = lectureRepository;
     }
 
     @Override
@@ -45,10 +47,8 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
     //Beginning of interface methods
     @Override
     public Task save(Long authorId, Long lectureId, MultipartFile taskFile) {
-        User author = userService.findById(authorId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        Lecture lecture = lectureService.findById(lectureId)
-                .orElseThrow(() -> new NotFoundException("Lecture not found"));
+        User author = getUser(authorId);
+        Lecture lecture = getLecture(lectureId);
 
         String taskType = allowedTypes.get(taskFile.getContentType());
         String taskName = String.format("task_L%d.%s", lectureId, taskType);
@@ -68,13 +68,22 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
 
     @Override
     public Resource findByLectureId(Long lectureId) {
-        Lecture lecture = lectureService.findById(lectureId)
-                .orElseThrow(() -> new NotFoundException("Lecture not found"));
+        Lecture lecture = getLecture(lectureId);
 
         Task task = taskRepository.findByLecture(lecture)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
         String fileName = task.getFileName();
 
         return loadFileByName(fileName);
+    }
+
+    private Lecture getLecture(Long lectureId) {
+        return lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new NotFoundException("Lecture not found"));
+    }
+
+    private User getUser(Long authorId) {
+        return userRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }

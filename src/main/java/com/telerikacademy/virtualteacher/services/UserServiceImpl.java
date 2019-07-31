@@ -2,6 +2,7 @@ package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
+import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedException;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
@@ -14,17 +15,13 @@ import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @AllArgsConstructor
@@ -33,7 +30,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CourseService courseService;
+    private final CourseRepository courseRepository;
     private final PictureService pictureService;
     private final RoleRepository roleRepository;
 
@@ -44,25 +41,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     @Override
-    public Optional<User> save(UserRequestDTO userRequestDTO) {
+    public User save(UserRequestDTO userRequestDTO) {
         if (!isEmailAvailable(userRequestDTO.getEmail()))
-            return Optional.empty();
+            throw new EmailAlreadyUsedException("Email already in use");
 
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         addRole(user, Role.Name.Student);
 
-        return Optional.of(userRepository.save(user));
+        return userRepository.save(user);
     }
 
     @Override
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    public void deleteById(Long userId) {
+        userRepository.deleteById(userId);
     }
 
     @Override
@@ -72,12 +70,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<Course> enrollCourse(Long userId, Long courseId) {
-        Course course = courseService.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+    public Course enrollCourse(Long userId, Long courseId) {
+        Course course = getCourse(courseId);
 
-        User user = findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        User user = findById(userId);
 
         if (course.getUsers().contains(user)) {
             throw new BadRequestException("User is already enrolled to this course");
@@ -85,21 +81,22 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("The author cannot enroll its own course");
         } else {
             course.getUsers().add(user);
-            return Optional.of(course);
+            return courseRepository.save(course);
         }
     }
 
+
     @Override
-    public Optional<User> updatePicture(Long userId, User author, MultipartFile pictureFile) {
+    public User updatePicture(Long userId, User author, MultipartFile pictureFile) {
         if (!author.getId().equals(userId) && !hasRole(author, Role.Name.Admin))
             throw new AccessDeniedException("You have no authority to edit this user's picture");
 
-        User toUpdate = findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        User toUpdate = findById(userId);
+
         Picture newPicture = pictureService.save(author.getId(), userId, pictureFile);
         toUpdate.setPicture(newPicture);
 
-        return Optional.of(userRepository.save(toUpdate));
+        return userRepository.save(toUpdate);
     }
 
     @Override
@@ -130,5 +127,10 @@ public class UserServiceImpl implements UserService {
     private boolean isEmailAvailable(String email) {
         return findAll().stream()
                 .noneMatch(user -> user.getEmail().equals(email));
+    }
+
+    private Course getCourse(Long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
     }
 }
