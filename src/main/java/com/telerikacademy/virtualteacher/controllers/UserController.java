@@ -2,7 +2,6 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
-import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.CourseService;
@@ -44,8 +43,8 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping("/{id}")
-    @PreAuthorize("isAnonymous()")
     public ResponseEntity findById(@PathVariable final Long id) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
@@ -54,18 +53,19 @@ public class UserController {
         );
     }
 
+    @PreAuthorize("hasRole('Student')")
     @PutMapping("/rate_course")
     public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
-                                             @RequestParam("rating") final Integer rating,
-                                             @CurrentUser User user) {
-
-        return courseService.rate(user.getId(), courseId, rating)
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElseThrow(() -> new BadRequestException("Rating must be between 1 and 5"));
-
-//        return ResponseEntity.ok().body(courseService.rate(user.getId(), courseId, rating).get());
+                                     @RequestParam("rating") final Integer rating,
+                                     @CurrentUser User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        courseService.rate(user, courseId, rating),
+                        CourseResponseDTO.class)
+        );
     }
 
+    @PreAuthorize("hasRole('Student')")
     @PostMapping("/enroll")
     public ResponseEntity enrollCourse(@RequestParam("courseId") Long courseId,
                                        @RequestParam("userId") Long userId) {

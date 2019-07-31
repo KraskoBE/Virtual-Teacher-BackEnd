@@ -5,7 +5,6 @@ import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.User;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface CourseService {
@@ -21,6 +20,6 @@ public interface CourseService {
 
     void deleteById(Long courseId);
 
-    Optional<Course> rate(Long userId, Long courseId, Integer rating);
+    Course rate(User user, Long courseId, Integer rating);
 
 }

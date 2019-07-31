@@ -3,6 +3,7 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
+import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.CourseRatingRepository;
@@ -14,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service("CourseService")
@@ -64,30 +64,24 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> rate(Long userId, Long courseId, Integer rating) {
+    public Course rate(User user, Long courseId, Integer rating) {
         if (rating < 1 || rating > 5) {
-            return Optional.empty();
+            throw new BadRequestException("Rating should be between 1 and 5");
         }
-
         Course course = getCourse(courseId);
-        User user = getUser(userId);
 
-        Optional<CourseRating> courseRating = courseRatingRepository.findById(new CourseRatingId(userId,courseId));
-        courseRatingRepository.save(new CourseRating(user,course,rating));
+        if (courseRatingRepository.findByUserAndCourse(user, course).isPresent())
+            throw new BadRequestException("You have already rated this course");
+
+        courseRatingRepository.save(new CourseRating(user, course, rating));
 
         course.setAverageRating(course.getCourseRatings().stream()
-        .mapToDouble(CourseRating::getRating)
-        .average()
-        .orElse(0));
+                .mapToDouble(CourseRating::getRating)
+                .average()
+                .orElse(0));
 
         course.setTotalVotes(course.getCourseRatings().size());
-        courseRepository.save(course);
-        return Optional.of(course);
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        return courseRepository.save(course);
     }
 
     private Course getCourse(Long courseId) {

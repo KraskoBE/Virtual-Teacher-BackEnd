@@ -28,4 +28,8 @@ public class CourseResponseDTO {
     private Set<Lecture> lectures;
 
     private Set<User> users;
+
+    private double averageRating;
+
+    private int totalVotes;
 }
