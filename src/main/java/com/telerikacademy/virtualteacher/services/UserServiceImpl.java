@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
         Assignment assignment = getAssignment(assignmentId);
         Lecture lecture = assignment.getLecture();
 
-        if (!lecture.getAuthor().equals(teacher)) {
+        if (!lecture.getAuthor().getId().equals(teacher.getId())) {
             throw new BadRequestException("You must be the lecture author to grade this!");
         }
 
