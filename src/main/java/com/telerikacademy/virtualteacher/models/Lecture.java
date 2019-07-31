@@ -71,21 +71,4 @@ public class Lecture {
     @Column(name = "enabled")
     @JsonIgnore
     private boolean enabled = true;
-
-    @Override
-    public String toString() {
-        return "Lecture{" +
-                "id=" + id + '\n' +
-                ", innerId=" + innerId +'\n' +
-                ", course=" + course +'\n' +
-                ", name='" + name + '\'' +'\n' +
-                ", description='" + description + '\'' +'\n' +
-                ", task=" + task +'\n' +
-                ", author=" + author +'\n' +
-                ", video=" + video +'\n' +
-                ", users=" + users +'\n' +
-                ", assignments=" + assignments +'\n' +
-                ", enabled=" + enabled +'\n' +
-                '}';
-    }
 }

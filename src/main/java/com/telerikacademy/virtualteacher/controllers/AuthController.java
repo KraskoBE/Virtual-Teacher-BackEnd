@@ -3,8 +3,7 @@ package com.telerikacademy.virtualteacher.controllers;
 import com.telerikacademy.virtualteacher.dtos.request.AuthenticationRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.AuthenticationResponseDTO;
-import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
-import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedException;
+import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.JwtProvider;
 import com.telerikacademy.virtualteacher.services.UserService;
 import lombok.AllArgsConstructor;
@@ -49,11 +48,9 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtProvider.generateToken(authentication);
-
         Map<String, String> responseMap = new HashMap<>();
         responseMap.put("email", userAuth.getEmail());
-        responseMap.put("token", token);
+        responseMap.put("token", jwtProvider.generateToken(authentication));
 
         return ResponseEntity.ok().body(responseMap);
     }
@@ -61,9 +58,8 @@ public class AuthController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
     public ResponseEntity register(@Valid @RequestBody final UserRequestDTO userRequestDTO) {
-        AuthenticationResponseDTO userResponse = userService.save(userRequestDTO)
-                .map(record -> modelMapper.map(record, AuthenticationResponseDTO.class))
-                .orElseThrow(() -> new EmailAlreadyUsedException("Email already in use"));
+        User newUser = userService.save(userRequestDTO);
+        AuthenticationResponseDTO userResponse = modelMapper.map(newUser, AuthenticationResponseDTO.class);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

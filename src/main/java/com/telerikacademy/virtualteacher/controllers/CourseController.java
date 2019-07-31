@@ -2,7 +2,6 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
-import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.CourseService;
@@ -25,20 +24,21 @@ public class CourseController {
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable(name = "id") Long courseId,
                                    @CurrentUser User user) {
-        return courseService.findById(courseId, user)
-                .map(record -> modelMapper.map(record, CourseResponseDTO.class))
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        courseService.findByIdAndUser(courseId, user),
+                        CourseResponseDTO.class)
+        );
     }
 
     @PreAuthorize("hasRole('Teacher')")
     @PostMapping
     public ResponseEntity save(@Valid @RequestBody CourseRequestDTO course,
                                @CurrentUser User user) {
-        return courseService.save(course, user)
-                .map(record -> modelMapper.map(record, CourseResponseDTO.class))
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElse(ResponseEntity.badRequest().build());
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        courseService.save(course, user),
+                        CourseResponseDTO.class)
+        );
     }
-
 }

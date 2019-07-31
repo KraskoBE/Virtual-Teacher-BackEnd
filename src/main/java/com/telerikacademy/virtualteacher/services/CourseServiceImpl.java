@@ -11,7 +11,6 @@ import com.telerikacademy.virtualteacher.repositories.TopicRepository;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service("CourseService")
 public class CourseServiceImpl implements CourseService {
+    private final UserService userService;
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
     private final CourseRatingRepository courseRatingRepository;
@@ -32,24 +32,30 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> findById(Long courseId, User user) {
-
-        if (!hasEnrolled(user, courseId) && !hasRole(user, "Admin"))
-            throw new AccessDeniedException("You have no access to this course");
-
-        return courseRepository.findById(courseId);
+    public Course findById(Long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
     @Override
-    public Optional<Course> save(CourseRequestDTO course, User user) {
+    public Course findByIdAndUser(Long courseId, User user) {
+        if (!hasEnrolled(user, courseId) &&
+                !userService.hasRole(user, Role.Name.Admin))
+            throw new AccessDeniedException("You have no access to this course");
+
+        return findById(courseId);
+    }
+
+    @Override
+    public Course save(CourseRequestDTO course, User author) {
 
         checkIfAlreadyExists(course.getName());
 
         Course courseToSave = modelMapper.map(course, Course.class);
-        courseToSave.setAuthor(user);
+        courseToSave.setAuthor(author);
         courseToSave.setTopic(findTopicById(course.getTopic()));
 
-        return Optional.of(courseRepository.save(courseToSave));
+        return courseRepository.save(courseToSave);
     }
 
     @Override
@@ -104,11 +110,5 @@ public class CourseServiceImpl implements CourseService {
         return user.getEnrolledCourses().stream()
                 .map(Course::getId)
                 .anyMatch(courseId::equals);
-    }
-
-    private boolean hasRole(User user, String roleName) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .anyMatch(role -> role.equals(roleName));
     }
 }

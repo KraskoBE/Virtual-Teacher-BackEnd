@@ -23,8 +23,8 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
-                            UserRepository userRepository,
-                            LectureRepository lectureRepository) {
+                           UserRepository userRepository,
+                           LectureRepository lectureRepository) {
         super(
                 Paths.get("./uploads/tasks"),
                 "http://localhost:8080/api/tasks"
@@ -69,21 +69,21 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
     @Override
     public Resource findByLectureId(Long lectureId) {
         Lecture lecture = getLecture(lectureId);
+
         Task task = taskRepository.findByLecture(lecture)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
         String fileName = task.getFileName();
 
         return loadFileByName(fileName);
     }
-    //End of interface methods
 
     private Lecture getLecture(Long lectureId) {
         return lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new NotFoundException(String.format("Lecture with id:%d not found", lectureId)));
+                .orElseThrow(() -> new NotFoundException("Lecture not found"));
     }
 
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", userId)));
+    private User getUser(Long authorId) {
+        return userRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }

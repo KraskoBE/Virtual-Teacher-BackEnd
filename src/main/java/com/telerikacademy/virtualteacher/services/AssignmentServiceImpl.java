@@ -43,6 +43,7 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
     @Override
     public Assignment save(Long authorId, Long lectureId, MultipartFile assignmentFile) {
         User author = getUser(authorId);
+
         Lecture lecture = getLecture(lectureId);
 
         String fileType = allowedTypes.get(assignmentFile.getContentType());
@@ -64,24 +65,27 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
     @Override
     public Resource findByLectureIdAndUserId(Long lectureId, Long userId) {
         Lecture lecture = getLecture(lectureId);
+
         User user = getUser(userId);
 
-        Assignment assignment = assignmentRepository.findByLectureAndUser(lecture, user)
-                .orElseThrow(() -> new NotFoundException("Assignment not found"));
+        Assignment assignment = getAssignment(lecture, user);
 
         String fileName = assignment.getFileName();
         return loadFileByName(fileName);
     }
 
-    //EOF interface methods
+    private Assignment getAssignment(Lecture lecture, User user) {
+        return assignmentRepository.findByLectureAndUser(lecture, user)
+                .orElseThrow(() -> new NotFoundException("Assignment not found"));
+    }
 
     private Lecture getLecture(Long lectureId) {
         return lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new NotFoundException(String.format("Lecture with id:%d not found", lectureId)));
     }
 
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", userId)));
+    private User getUser(Long authorId) {
+        return userRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", authorId)));
     }
 }

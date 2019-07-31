@@ -1,16 +1,15 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.LectureRequestDTO;
+import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
-import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -20,7 +19,7 @@ public class LectureServiceImpl implements LectureService {
 
     private final VideoService videoService;
     private final TaskService taskService;
-    private final CourseRepository courseRepository;
+    private final CourseService courseService;
 
     //private final ModelMapper modelMapper;
 
@@ -30,46 +29,61 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public Optional<List<Lecture>> findAllByCourse(Course course) {
-        List<Lecture> lectures = lectureRepository.findAll()
-                .stream()
-                .filter(x -> x.getCourse().getId().equals(course.getId()))
-                .collect(Collectors.toList());
-        if (!lectures.isEmpty()) {
-            return Optional.of(lectures);
-        } else {
-            return Optional.empty();
-        }
+    public Lecture findById(Long lectureId) {
+        return lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new NotFoundException("Lecture not found"));
     }
 
     @Override
-    public Optional<Lecture> findById(Long lectureId) {
-        return lectureRepository.findById(lectureId);
+    public List<Lecture> findAllByCourse(Course course) {
+        return lectureRepository.findAll()
+                .stream()
+                .filter(x -> x.getCourse().getId().equals(course.getId()))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public Lecture findByCourseAndInnerId(User user, Long courseId, Long lectureId) {
+        Course course = courseService.findById(courseId);
+
+        Lecture lecture = course.getLectures().stream()
+                .filter(lecture1 -> lecture1.getInnerId().equals(lectureId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Lecture not found"));
+
+        if (!isUserEnrolled(user, course) && !userHasRole(user, "Admin"))
+            throw new AccessDeniedException("You are not enrolled for this course");
+
+        if (!hasUserFinishedPrevious(user, course, lecture) && !userHasRole(user, "Admin"))
+            throw new AccessDeniedException("You need to finish the previous lecture first");
+
+        return lecture;
     }
 
     @Override // TODO do with modelMapper without breaking everything
-    public Optional<Lecture> save(LectureRequestDTO lectureRequestDTO, User user) {
+    public Lecture save(LectureRequestDTO lectureRequestDTO, User author) {
         checkIfAlreadyExists(lectureRequestDTO.getName());
 
-        Course course = getCourse(lectureRequestDTO.getCourseId());
+        Course course = courseService.findById(lectureRequestDTO.getCourseId());
 
         Lecture lectureToSave = new Lecture();
 
         lectureToSave.setName(lectureRequestDTO.getName());
         lectureToSave.setDescription(lectureRequestDTO.getDescription());
         lectureToSave.setInnerId((long) course.getLectures().size() + 1);
-        lectureToSave.setAuthor(user);
+        lectureToSave.setAuthor(author);
         lectureToSave.setCourse(course);
 
         lectureRepository.save(lectureToSave);
 
-        Video video = videoService.save(user.getId(), lectureToSave.getId(), lectureRequestDTO.getVideoFile());
-        Task task = taskService.save(user.getId(), lectureToSave.getId(), lectureRequestDTO.getTaskFile());
+        Video video = videoService.save(author.getId(), lectureToSave.getId(), lectureRequestDTO.getVideoFile());
+        Task task = taskService.save(author.getId(), lectureToSave.getId(), lectureRequestDTO.getTaskFile());
 
         lectureToSave.setVideo(video);
         lectureToSave.setTask(task);
 
-        return Optional.of(lectureRepository.save(lectureToSave));
+        return lectureRepository.save(lectureToSave);
     }
 
     private void checkIfAlreadyExists(String lectureName) {
@@ -78,8 +92,24 @@ public class LectureServiceImpl implements LectureService {
         }
     }
 
-    private Course getCourse(Long courseId) {
-        return courseRepository.findById(courseId)
-                .orElseThrow(() -> new NotFoundException(String.format("Course with ID:%d not found", courseId)));
+    private boolean isUserEnrolled(User user, Course course) {
+        return course.getUsers().contains(user);
+    }
+
+    private boolean hasUserFinishedPrevious(User user, Course course, Lecture lecture) {
+        if (lecture.getInnerId() == 1)
+            return true;
+
+        Lecture previousLecture = course.getLectures().stream()
+                .filter(lecture1 -> lecture.getInnerId().equals(lecture1.getInnerId() - 1))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Previous lecture not found"));
+        return user.getFinishedLectures().contains(previousLecture);
+    }
+
+    private boolean userHasRole(User user, String roleName) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(roleName::equals);
     }
 }

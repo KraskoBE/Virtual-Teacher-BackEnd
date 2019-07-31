@@ -11,13 +11,16 @@ import java.util.Optional;
 public interface CourseService {
     List<Course> findAll();
 
-    Optional<Course> findById(Long courseId, User user);
+    Course findById(Long courseId);
 
-    Optional<Course> save(CourseRequestDTO course, User user);
+    Course findByIdAndUser(Long courseId, User user);
 
-    //Optional<Course> update(Long id, Course course);
+    Course save(CourseRequestDTO course, User author);
+
+    //Course update(Long id, Course course);
 
     void deleteById(Long courseId);
 
     Optional<Course> rate(Long userId, Long courseId, Integer rating);
+
 }

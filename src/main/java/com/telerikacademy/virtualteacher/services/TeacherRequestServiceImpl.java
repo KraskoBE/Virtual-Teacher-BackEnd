@@ -6,28 +6,23 @@ import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.TeacherRequest;
 import com.telerikacademy.virtualteacher.models.User;
-import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.TeacherRequestRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service("TeacherRequestService")
 @AllArgsConstructor
 public class TeacherRequestServiceImpl implements TeacherRequestService {
 
     private TeacherRequestRepository teacherRequestRepository;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
+    private UserService userService;
 
     @Override
     public TeacherRequest save(Long userId) {
-        User user  = getUser(userId);
+        User user = userService.findById(userId);
 
         checkIfAlreadyExists(user);
 
@@ -42,14 +37,16 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
     }
 
     @Override
-    public Optional<TeacherRequest> findById(Long id){
-        return teacherRequestRepository.findById(id);
+    public TeacherRequest findById(Long id) {
+        return teacherRequestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TeacherRequest not found"));
     }
 
     @Override
-    public Optional<TeacherRequest> findByUserId(Long userId){
-        User user = getUser(userId);
-        return teacherRequestRepository.findByUser(user);
+    public TeacherRequest findByUserId(Long userId) {
+        User user = userService.findById(userId);
+        return teacherRequestRepository.findByUser(user)
+                .orElseThrow(() -> new NotFoundException("TeacherRequest not found"));
     }
 
     @Override
@@ -60,55 +57,26 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
     @Transactional
     @Override
     public void deleteByUserId(Long userId) {
-        User user = getUser(userId);
+        User user = userService.findById(userId);
         teacherRequestRepository.deleteByUser(user);
     }
 
     @Override
-    public Optional<TeacherRequest> acceptById(Long id) {
-        TeacherRequest toAccept = getTeacherRequest(id);
-        User user = toAccept.getUser();
-        Role teacher = getRole(Role.TEACHER);
+    public TeacherRequest acceptByUserId(Long userId) {
+        TeacherRequest teacherRequest = findByUserId(userId);
 
-        if ( user.getRoles().contains(teacher) ) {
+        User user = userService.findById(userId);
+
+        if (userService.hasRole(user, Role.Name.Teacher))
             throw new BadRequestException("Already a teacher");
-        }
 
-        user.getRoles().add(teacher);
-        userRepository.save(user);
+        userService.addRole(user, Role.Name.Teacher);
 
-        toAccept.setAccepted(true);
-        return Optional.of(teacherRequestRepository.save(toAccept));
-    }
-
-    @Override
-    public Optional<TeacherRequest> acceptByUserId(Long userId) {
-        return acceptById(getTeacherRequestByUserId(userId).getId());
+        teacherRequest.setAccepted(true);
+        return teacherRequestRepository.save(teacherRequest);
     }
 
     //
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-    }
-
-    private TeacherRequest getTeacherRequestByUserId(Long id) {
-        User user = getUser(id);
-        return teacherRequestRepository.findByUser(user)
-                .orElseThrow(() -> new NotFoundException("TeacherRequest not found"));
-    }
-
-    private TeacherRequest getTeacherRequest(Long id) {
-        return teacherRequestRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("TeacherRequest not found"));
-    }
-
-    private Role getRole(String name) {
-        return roleRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("Role not found"));
-    }
-
     private void checkIfAlreadyExists(User user) {
         if (teacherRequestRepository.findByUser(user).isPresent())
             throw new AlreadyExistsException("You have already requested to become a teacher");

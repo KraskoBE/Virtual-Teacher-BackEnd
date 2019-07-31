@@ -17,9 +17,11 @@ import java.util.Collection;
 @Table(name = "roles")
 public class Role {
 
-    public static final String STUDENT = "Student";
-    public static final String TEACHER = "Teacher";
-    public static final String ADMIN = "Admin";
+    public enum Name {
+        Student,
+        Teacher,
+        Admin
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -67,6 +67,6 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", userId)));
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }
