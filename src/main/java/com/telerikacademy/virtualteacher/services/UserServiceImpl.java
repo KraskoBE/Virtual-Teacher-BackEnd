@@ -6,10 +6,8 @@ import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedExcepti
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
-import com.telerikacademy.virtualteacher.models.Course;
-import com.telerikacademy.virtualteacher.models.Picture;
-import com.telerikacademy.virtualteacher.models.Role;
-import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.models.*;
+import com.telerikacademy.virtualteacher.repositories.AssignmentRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
@@ -27,12 +25,14 @@ import java.util.List;
 @AllArgsConstructor
 @Service("UserService")
 public class UserServiceImpl implements UserService {
+
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
     private final PictureService pictureService;
     private final RoleRepository roleRepository;
+    private AssignmentRepository assignmentRepository;
 
 
     @Override
@@ -83,6 +83,24 @@ public class UserServiceImpl implements UserService {
             course.getUsers().add(user);
             return courseRepository.save(course);
         }
+    }
+
+    @Override
+    public Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher) {
+        Assignment assignment = getAssignment(assignmentId);
+        Lecture lecture = assignment.getLecture();
+
+        if (!lecture.getAuthor().equals(teacher)) {
+            throw new BadRequestException("You must be the lecture author to grade this!");
+        }
+
+        assignment.setGrade(grade);
+        return assignmentRepository.save(assignment);
+    }
+
+    private Assignment getAssignment(Long id) {
+        return assignmentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Assignment not found"));
     }
 
 

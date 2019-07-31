@@ -5,6 +5,7 @@ import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
+import com.telerikacademy.virtualteacher.services.AssignmentService;
 import com.telerikacademy.virtualteacher.services.CourseService;
 import com.telerikacademy.virtualteacher.services.TeacherRequestService;
 import com.telerikacademy.virtualteacher.services.UserService;
@@ -52,6 +53,14 @@ public class UserController {
                         userService.findById(id),
                         UserResponseDTO.class)
         );
+    }
+
+    @PutMapping("/grade_assignment")
+    @PreAuthorize("hasRole('Teacher')")
+    public ResponseEntity gradeAssignment(@RequestParam("assignment_id") Long assignmentId,
+                                          @RequestParam("grade") Integer grade,
+                                          @CurrentUser User user) {
+        return ResponseEntity.ok().body(userService.gradeAssignment(assignmentId,grade,user));
     }
 
     @PutMapping("/rate_course")

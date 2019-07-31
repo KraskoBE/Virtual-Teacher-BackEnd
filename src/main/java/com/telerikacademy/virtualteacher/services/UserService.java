@@ -1,6 +1,7 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.models.Assignment;
 import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.User;
@@ -24,6 +25,8 @@ public interface UserService extends UserDetailsService {
     User findByEmail(String email);
 
     Course enrollCourse(Long userId, Long courseId);
+
+    Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher);
 
     User updatePicture(Long userId, User author, MultipartFile pictureFile);
 
