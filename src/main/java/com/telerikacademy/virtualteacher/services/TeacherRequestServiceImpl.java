@@ -21,9 +21,7 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
     private UserService userService;
 
     @Override
-    public TeacherRequest save(Long userId) {
-        User user = userService.findById(userId);
-
+    public TeacherRequest save(User user) {
         checkIfAlreadyExists(user);
 
         TeacherRequest newTeacherRequest = new TeacherRequest(user);

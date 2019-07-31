@@ -2,7 +2,6 @@ package com.telerikacademy.virtualteacher.controllers;
 
 
 import com.telerikacademy.virtualteacher.models.Assignment;
-import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.AssignmentService;
@@ -21,16 +20,16 @@ public class AssignmentController {
     private final AssignmentService assignmentService;
 
     @PostMapping(consumes = {"multipart/form-data"})
-    public Assignment save(@RequestParam("file") MultipartFile file,
-                           @RequestParam("lectureId") Long lectureId,
-                           @CurrentUser User user) {
+    public Assignment save(@RequestParam("file") final MultipartFile file,
+                           @RequestParam("lectureId") final Long lectureId,
+                           @CurrentUser final User user) {
         return assignmentService.save(user.getId(), lectureId, file);
     }
 
     @GetMapping("/{lectureId}/{userId}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long lectureId,
-                                                 @PathVariable Long userId) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable final Long lectureId,
+                                                 @PathVariable final Long userId) {
 
         Resource resource = assignmentService.findByLectureIdAndUserId(lectureId, userId);
 

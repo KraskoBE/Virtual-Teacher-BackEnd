@@ -15,18 +15,18 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/videos")
 @AllArgsConstructor
 public class VideoController {
-    private VideoService videoService;
+    private final VideoService videoService;
 
     @PostMapping
-    public Video save(@RequestParam("file") MultipartFile file,
-                      @RequestParam("lectureId") Long lectureId,
-                      @CurrentUser User user) {
+    public Video save(@RequestParam("file") final MultipartFile file,
+                      @RequestParam("lectureId") final Long lectureId,
+                      @CurrentUser final User user) {
         return videoService.save(user.getId(), lectureId, file);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable final Long id) {
 
         Resource resource = videoService.findByLectureId(id);
 
