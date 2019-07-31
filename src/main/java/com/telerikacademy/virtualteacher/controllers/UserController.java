@@ -67,8 +67,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('Student')")
     @PostMapping("/enroll")
-    public ResponseEntity enrollCourse(@RequestParam("courseId") Long courseId,
-                                       @RequestParam("userId") Long userId) {
+    public ResponseEntity enrollCourse(@RequestParam("courseId") final Long courseId,
+                                       @RequestParam("userId") final Long userId) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         userService.enrollCourse(userId, courseId),
@@ -78,7 +78,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('Student')")
     @PostMapping("/teacherRequest")
-    public ResponseEntity teacherRequest(@CurrentUser User user) {
+    public ResponseEntity teacherRequest(@CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 teacherRequestService.save(user)
         );
@@ -86,9 +86,9 @@ public class UserController {
 
     @PreAuthorize("hasRole('Student')")
     @PutMapping("/{id}/updatePicture")
-    public ResponseEntity changePicture(@PathVariable(name = "id") Long userId,
-                                        @CurrentUser User user,
-                                        @RequestParam(name = "picture") MultipartFile pictureFile) {
+    public ResponseEntity changePicture(@PathVariable(name = "id") final Long userId,
+                                        @CurrentUser final User user,
+                                        @RequestParam(name = "picture") final MultipartFile pictureFile) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         userService.updatePicture(userId, user, pictureFile),

@@ -19,15 +19,15 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public Task save(@RequestParam("file") MultipartFile file,
-                     @RequestParam("lectureId") Long lectureId,
-                     @CurrentUser User user) {
+    public Task save(@RequestParam("file") final MultipartFile file,
+                     @RequestParam("lectureId") final Long lectureId,
+                     @CurrentUser final User user) {
         return taskService.save(user.getId(), lectureId, file);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable final Long id) {
 
         Resource resource = taskService.findByLectureId(id);
 

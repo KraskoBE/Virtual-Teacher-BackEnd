@@ -9,7 +9,6 @@ import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.CourseRatingRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
     private final CourseRatingRepository courseRatingRepository;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -39,11 +37,15 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course findByIdAndUser(Long courseId, User user) {
-        if (!hasEnrolled(user, courseId) &&
-                !userService.hasRole(user, Role.Name.Admin))
-            throw new AccessDeniedException("You have no access to this course");
+        Course course = findById(courseId);
 
-        return findById(courseId);
+        if (userService.hasRole(user, Role.Name.Admin) ||
+                course.getAuthor().equals(user) ||
+                course.isSubmitted()
+        )
+            return course;
+
+        throw new AccessDeniedException("You have no access to this course");
     }
 
     @Override

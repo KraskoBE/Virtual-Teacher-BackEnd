@@ -23,9 +23,9 @@ public class LectureController {
 
     @PreAuthorize("hasRole('Student')")
     @GetMapping("/{courseId}/{lectureInnerId}")
-    public ResponseEntity findByCourseAndId(@CurrentUser User user,
-                                            @PathVariable Long courseId,
-                                            @PathVariable Long lectureInnerId) {
+    public ResponseEntity findByCourseAndId(@CurrentUser final User user,
+                                            @PathVariable final Long courseId,
+                                            @PathVariable final Long lectureInnerId) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         lectureService.findByCourseAndInnerId(user, courseId, lectureInnerId),
@@ -34,8 +34,8 @@ public class LectureController {
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity save(@Valid @ModelAttribute LectureRequestDTO lectureRequestDTO,
-                               @CurrentUser User user) {
+    public ResponseEntity save(@Valid @ModelAttribute final LectureRequestDTO lectureRequestDTO,
+                               @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         lectureService.save(lectureRequestDTO, user),

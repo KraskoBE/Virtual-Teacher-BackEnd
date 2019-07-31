@@ -20,10 +20,16 @@ public class CourseController {
     private final CourseService courseService;
     private final ModelMapper modelMapper;
 
-    @PreAuthorize("hasRole('Student')")
+    /*@GetMapping
+    public ResponseEntity findAll()
+    {
+
+    }*/
+
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable(name = "id") Long courseId,
-                                   @CurrentUser User user) {
+    @PreAuthorize("hasRole('Student')")
+    public ResponseEntity findById(@PathVariable(name = "id") final Long courseId,
+                                   @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         courseService.findByIdAndUser(courseId, user),
@@ -33,8 +39,8 @@ public class CourseController {
 
     @PreAuthorize("hasRole('Teacher')")
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody CourseRequestDTO course,
-                               @CurrentUser User user) {
+    public ResponseEntity save(@Valid @RequestBody final CourseRequestDTO course,
+                               @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         courseService.save(course, user),
