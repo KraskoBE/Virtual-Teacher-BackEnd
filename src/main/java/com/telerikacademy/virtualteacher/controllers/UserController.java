@@ -76,10 +76,11 @@ public class UserController {
         );
     }
 
-    @PostMapping("/teacherRequest/{id}")
-    public ResponseEntity teacherRequest(@PathVariable(name = "id") Long id) {
+    @PreAuthorize("hasRole('Student')")
+    @PostMapping("/teacherRequest")
+    public ResponseEntity teacherRequest(@CurrentUser User user) {
         return ResponseEntity.ok().body(
-                teacherRequestService.save(id)
+                teacherRequestService.save(user)
         );
     }
 

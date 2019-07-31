@@ -1,12 +1,13 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.models.TeacherRequest;
+import com.telerikacademy.virtualteacher.models.User;
 
 import java.util.List;
 
 public interface TeacherRequestService {
 
-    TeacherRequest save(Long userId);
+    TeacherRequest save(User user);
 
     List<TeacherRequest> findAll();
 
