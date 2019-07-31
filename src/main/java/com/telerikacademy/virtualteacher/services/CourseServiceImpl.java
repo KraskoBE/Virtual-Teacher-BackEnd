@@ -4,12 +4,11 @@ import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
-import com.telerikacademy.virtualteacher.models.Course;
-import com.telerikacademy.virtualteacher.models.Role;
-import com.telerikacademy.virtualteacher.models.Topic;
-import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.models.*;
+import com.telerikacademy.virtualteacher.repositories.CourseRatingRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
+import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,8 @@ import java.util.Optional;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
+    private final CourseRatingRepository courseRatingRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -55,6 +56,39 @@ public class CourseServiceImpl implements CourseService {
     public void deleteById(Long courseId) {
 
     }
+
+    @Override
+    public Optional<Course> rate(Long userId, Long courseId, Integer rating) {
+        if (rating < 1 || rating > 5) {
+            return Optional.empty();
+        }
+
+        Course course = getCourse(courseId);
+        User user = getUser(userId);
+
+        Optional<CourseRating> courseRating = courseRatingRepository.findById(new CourseRatingId(userId,courseId));
+        courseRatingRepository.save(new CourseRating(user,course,rating));
+
+        course.setAverageRating(course.getCourseRatings().stream()
+        .mapToDouble(CourseRating::getRating)
+        .average()
+        .orElse(0));
+
+        course.setTotalVotes(course.getCourseRatings().size());
+        courseRepository.save(course);
+        return Optional.of(course);
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private Course getCourse(Long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+    }
+
 
     private Topic findTopicById(Long topicId) {
         return topicRepository.findById(topicId)

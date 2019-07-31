@@ -7,6 +7,7 @@ import com.telerikacademy.virtualteacher.models.User;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface CourseService {
     List<Course> findAll();
 
@@ -17,4 +18,6 @@ public interface CourseService {
     //Optional<Course> update(Long id, Course course);
 
     void deleteById(Long courseId);
+
+    Optional<Course> rate(Long userId, Long courseId, Integer rating);
 }

@@ -57,4 +57,16 @@ public class Course {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "course_id")})
     private Set<User> users = new HashSet<>();
+
+    @NotNull
+    @Column(name = "average_rating")
+    private double averageRating = 0.0;
+
+    @NotNull
+    @Column(name = "total_votes")
+    private int totalVotes = 0;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "course")
+    private Set<CourseRating> courseRatings;
 }

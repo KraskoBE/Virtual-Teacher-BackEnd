@@ -3,11 +3,14 @@ package com.telerikacademy.virtualteacher.controllers;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
+import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
+import com.telerikacademy.virtualteacher.services.CourseService;
 import com.telerikacademy.virtualteacher.services.TeacherRequestService;
 import com.telerikacademy.virtualteacher.services.UserService;
 import lombok.AllArgsConstructor;
+import org.hibernate.validator.constraints.pl.REGON;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final CourseService courseService;
     private final TeacherRequestService teacherRequestService;
 
     @PreAuthorize("hasRole('Admin')")
@@ -50,6 +54,18 @@ public class UserController {
                 .map(record -> modelMapper.map(record, UserResponseDTO.class))
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @PutMapping("/rate_course")
+    public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
+                                             @RequestParam("rating") final Integer rating,
+                                             @CurrentUser User user) {
+
+        return courseService.rate(user.getId(), courseId, rating)
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElseThrow(() -> new BadRequestException("Rating must be between 1 and 5"));
+
+//        return ResponseEntity.ok().body(courseService.rate(user.getId(), courseId, rating).get());
     }
 
     @PostMapping("/enroll")
