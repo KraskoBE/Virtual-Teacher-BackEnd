@@ -7,6 +7,8 @@ import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.CourseService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +22,25 @@ public class CourseController {
     private final CourseService courseService;
     private final ModelMapper modelMapper;
 
-    /*@GetMapping
-    public ResponseEntity findAll()
-    {
+    @GetMapping
+    public ResponseEntity findOrderedByAverageRating(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok().body(
+                courseService.findByOrderedByAverageRating(pageable)
+                        .map(course -> modelMapper.map(
+                                course,
+                                CourseResponseDTO.class)
+                        )
+        );
+    }
 
-    }*/
+    @GetMapping(params = "topicId")
+    public ResponseEntity findAllByTopic(@RequestParam(name = "topicId") Long topicId,
+                                         @PageableDefault Pageable pageable) {
+        return ResponseEntity.ok().body(
+                courseService.findAllByTopic(topicId, pageable).stream()
+                        .map(course -> modelMapper.map(course, CourseResponseDTO.class))
+        );
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('Student')")

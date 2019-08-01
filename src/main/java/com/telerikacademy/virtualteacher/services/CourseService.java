@@ -3,12 +3,14 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
 import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.User;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 public interface CourseService {
-    List<Course> findAll();
+    Page<Course> findByOrderedByAverageRating(Pageable pageable);
+
+    Page<Course> findAllByTopic(Long topicId, Pageable pageable);
 
     Course findById(Long courseId);
 
