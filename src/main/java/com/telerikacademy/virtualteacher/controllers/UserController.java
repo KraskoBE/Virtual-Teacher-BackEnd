@@ -53,7 +53,7 @@ public class UserController {
                         UserResponseDTO.class)
         );
     }
-    
+
     @PutMapping("/grade_assignment")
     @PreAuthorize("hasRole('Teacher')")
     public ResponseEntity gradeAssignment(@RequestParam("assignment_id") Long assignmentId,
@@ -77,10 +77,10 @@ public class UserController {
     @PreAuthorize("hasRole('Student')")
     @PostMapping("/enroll")
     public ResponseEntity enrollCourse(@RequestParam("courseId") final Long courseId,
-                                       @RequestParam("userId") final Long userId) {
+                                       @CurrentUser User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
-                        userService.enrollCourse(userId, courseId),
+                        userService.enrollCourse(user.getId(), courseId),
                         CourseResponseDTO.class)
         );
     }
