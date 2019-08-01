@@ -22,7 +22,20 @@ public class CourseController {
     private final CourseService courseService;
     private final ModelMapper modelMapper;
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping
+    public ResponseEntity findAll(@PageableDefault Pageable pageable)
+    {
+        return ResponseEntity.ok().body(
+                courseService.findAll(pageable)
+                        .map(course -> modelMapper.map(
+                                course,
+                                CourseResponseDTO.class)
+                        )
+        );
+    }
+
+    @GetMapping("/top")
     public ResponseEntity findOrderedByAverageRating(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findByOrderedByAverageRating(pageable)
@@ -33,8 +46,8 @@ public class CourseController {
         );
     }
 
-    @GetMapping(params = "topicId")
-    public ResponseEntity findAllByTopic(@RequestParam(name = "topicId") Long topicId,
+    @GetMapping("/topic/{id}")
+    public ResponseEntity findAllByTopic(@PathVariable(name = "id") Long topicId,
                                          @PageableDefault Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findAllByTopic(topicId, pageable).stream()

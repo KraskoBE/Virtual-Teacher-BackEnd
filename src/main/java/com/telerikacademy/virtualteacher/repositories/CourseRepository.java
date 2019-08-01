@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByNameIgnoreCase(String name);
 
+    Page<Course> findAll(Pageable page);
+
     Page<Course> findBySubmittedTrueOrderByAverageRatingDescTotalVotesDesc(Pageable pageable);
 
     Page<Course> findAllByTopicAndSubmittedIsTrue(Topic topic, Pageable pageable);

@@ -25,6 +25,10 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRatingRepository courseRatingRepository;
     private final ModelMapper modelMapper;
 
+    @Override
+    public Page<Course> findAll(Pageable pageable) {
+        return courseRepository.findAll(pageable);
+    }
 
     @Override
     public Page<Course> findByOrderedByAverageRating(Pageable pageable) {
