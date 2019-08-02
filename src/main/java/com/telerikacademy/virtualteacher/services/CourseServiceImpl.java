@@ -11,9 +11,10 @@ import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @AllArgsConstructor
 @Service("CourseService")
@@ -25,8 +26,20 @@ public class CourseServiceImpl implements CourseService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<Course> findAll() {
-        return courseRepository.findAll();
+    public Page<Course> findAll(Pageable pageable) {
+        return courseRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Course> findByOrderedByAverageRating(Pageable pageable) {
+        return courseRepository.findBySubmittedTrueOrderByAverageRatingDescTotalVotesDesc(pageable);
+    }
+
+    @Override
+    public Page<Course> findAllByTopic(Long topicId, Pageable pageable) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new NotFoundException("Topic not found"));
+        return courseRepository.findAllByTopicAndSubmittedIsTrue(topic, pageable);
     }
 
     @Override

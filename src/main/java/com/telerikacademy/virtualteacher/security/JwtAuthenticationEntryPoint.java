@@ -34,12 +34,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 .filter(Objects::nonNull)
                 .findFirst();
 
-        System.out.println(errorString);
-
         if (errorString.isPresent())
             httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, errorString.get());
         else
-            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Login details");
+            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized");
     }
 }
 
