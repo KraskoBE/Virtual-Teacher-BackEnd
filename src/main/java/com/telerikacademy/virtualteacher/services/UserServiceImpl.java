@@ -27,14 +27,16 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final ModelMapper modelMapper;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CourseRepository courseRepository;
-    private final PictureService pictureService;
-    private final RoleRepository roleRepository;
-    private AssignmentRepository assignmentRepository;
-    private AssignmentService assignmentService;
 
+    private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
+    private final RoleRepository roleRepository;
+    private final AssignmentRepository assignmentRepository;
+
+    private final PictureService pictureService;
+    private final AssignmentService assignmentService;
+    private final CourseService courseService;
 
     @Override
     public List<User> findAll() {
@@ -71,19 +73,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Course enrollCourse(Long userId, Long courseId) {
-        Course course = getCourse(courseId);
-
-        User user = findById(userId);
+    public Course enrollCourse(User user, Long courseId) {
+        Course course = getCourse(courseId, user);
 
         if (course.getUsers().contains(user)) {
             throw new BadRequestException("User is already enrolled to this course");
-        } else if (course.getAuthor().equals(user)) {
-            throw new BadRequestException("The author cannot enroll its own course");
-        } else {
-            course.getUsers().add(user);
-            return courseRepository.save(course);
         }
+        if (course.getAuthor().equals(user)) {
+            throw new BadRequestException("The author cannot enroll its own course");
+        }
+        if (user.getFinishedCourses().contains(course)) {
+            throw new BadRequestException("User has already finished that course");
+        }
+        course.getUsers().add(user);
+        return courseRepository.save(course);
+
     }
 
     @Override
@@ -93,7 +97,7 @@ public class UserServiceImpl implements UserService {
         User student = assignment.getAuthor();
 
 
-        if (!lecture.getAuthor().getId().equals(teacher.getId())) {
+        if (!lecture.getAuthor().equals(teacher)) {
             throw new BadRequestException("You must be the lecture author to grade this!");
         }
 
@@ -165,8 +169,7 @@ public class UserServiceImpl implements UserService {
                 .noneMatch(user -> user.getEmail().equals(email));
     }
 
-    private Course getCourse(Long courseId) {
-        return courseRepository.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+    private Course getCourse(Long courseId, User user) {
+        return courseService.findByIdAndUser(courseId, user);
     }
 }

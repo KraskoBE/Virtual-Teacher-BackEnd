@@ -24,7 +24,7 @@ public interface UserService extends UserDetailsService {
 
     User findByEmail(String email);
 
-    Course enrollCourse(Long userId, Long courseId);
+    Course enrollCourse(User user, Long courseId);
 
     Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher);
 

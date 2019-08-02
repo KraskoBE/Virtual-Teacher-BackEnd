@@ -80,7 +80,7 @@ public class UserController {
                                        @CurrentUser User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
-                        userService.enrollCourse(user.getId(), courseId),
+                        userService.enrollCourse(user, courseId),
                         CourseResponseDTO.class)
         );
     }

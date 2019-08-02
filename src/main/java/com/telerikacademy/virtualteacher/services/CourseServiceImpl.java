@@ -19,11 +19,12 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service("CourseService")
 public class CourseServiceImpl implements CourseService {
-    private final UserService userService;
+
+    private final ModelMapper modelMapper;
+
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
     private final CourseRatingRepository courseRatingRepository;
-    private final ModelMapper modelMapper;
 
     @Override
     public Page<Course> findAll(Pageable pageable) {
@@ -52,13 +53,19 @@ public class CourseServiceImpl implements CourseService {
     public Course findByIdAndUser(Long courseId, User user) {
         Course course = findById(courseId);
 
-        if (userService.hasRole(user, Role.Name.Admin) ||
+        if (hasRole(user, Role.Name.Admin) ||
                 course.getAuthor().equals(user) ||
                 course.isSubmitted()
         )
             return course;
 
         throw new AccessDeniedException("You have no access to this course");
+    }
+
+    private boolean hasRole(User user, Role.Name roleName) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(roleName.toString()::equals);
     }
 
     @Override
