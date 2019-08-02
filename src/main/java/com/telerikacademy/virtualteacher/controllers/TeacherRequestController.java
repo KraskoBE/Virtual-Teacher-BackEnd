@@ -14,18 +14,8 @@ public class TeacherRequestController {
 
     private final TeacherRequestService teacherRequestService;
 
-    @PreAuthorize("hasRole('Admin')")
-    @PutMapping("/{userId}")
-    public ResponseEntity<TeacherRequest> accept(@PathVariable(name = "userId") final Long userId) {
-        return ResponseEntity.ok().body(
-                teacherRequestService.acceptByUserId(userId)
-        );
-    }
 
-    @PreAuthorize("hasRole('Admin')")
-    @DeleteMapping("/{userId}")
-    public void deny(@PathVariable(name = "userId") final Long userId) {
-        teacherRequestService.deleteByUserId(userId);
-    }
+
+
 
 }

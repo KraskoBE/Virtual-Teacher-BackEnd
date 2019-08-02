@@ -5,6 +5,7 @@ import com.telerikacademy.virtualteacher.models.Assignment;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.AssignmentService;
+import com.telerikacademy.virtualteacher.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+    private final UserService userService;
 
     @PostMapping(consumes = {"multipart/form-data"})
     public Assignment save(@RequestParam("file") final MultipartFile file,
@@ -37,5 +39,12 @@ public class AssignmentController {
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment: filename=\"" + resource.getFilename() +"\"")
                 .body(resource);
+    }
+
+    @PutMapping("/{id}/grade")
+    public ResponseEntity gradeAssignment(@PathVariable("id") Long assignmentId,
+                                          @RequestParam("grade") Integer grade,
+                                          @CurrentUser User user) {
+        return ResponseEntity.ok().body(userService.gradeAssignment(assignmentId,grade,user));
     }
 }

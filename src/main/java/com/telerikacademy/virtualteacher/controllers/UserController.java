@@ -54,14 +54,6 @@ public class UserController {
         );
     }
 
-    @PutMapping("/grade_assignment")
-    @PreAuthorize("hasRole('Teacher')")
-    public ResponseEntity gradeAssignment(@RequestParam("assignment_id") Long assignmentId,
-                                          @RequestParam("grade") Integer grade,
-                                          @CurrentUser User user) {
-        return ResponseEntity.ok().body(userService.gradeAssignment(assignmentId,grade,user));
-    }
-
     @PreAuthorize("hasRole('Student')")
     @PutMapping("/rate_course")
     public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
@@ -85,13 +77,7 @@ public class UserController {
         );
     }
 
-    @PreAuthorize("hasRole('Student')")
-    @PostMapping("/teacherRequest")
-    public ResponseEntity teacherRequest(@CurrentUser final User user) {
-        return ResponseEntity.ok().body(
-                teacherRequestService.save(user)
-        );
-    }
+
 
     @PreAuthorize("hasRole('Student')")
     @PutMapping("/{id}/updatePicture")
