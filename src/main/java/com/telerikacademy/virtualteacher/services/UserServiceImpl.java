@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final PictureService pictureService;
     private final RoleRepository roleRepository;
     private AssignmentRepository assignmentRepository;
+    private AssignmentService assignmentService;
 
 
     @Override
@@ -89,13 +90,26 @@ public class UserServiceImpl implements UserService {
     public Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher) {
         Assignment assignment = getAssignment(assignmentId);
         Lecture lecture = assignment.getLecture();
+        User student = assignment.getAuthor();
+
 
         if (!lecture.getAuthor().getId().equals(teacher.getId())) {
             throw new BadRequestException("You must be the lecture author to grade this!");
         }
-
         assignment.setGrade(grade);
+
+        finishLectureIfLastAssignment(student, assignment);
+
         return assignmentRepository.save(assignment);
+    }
+
+    private void finishLectureIfLastAssignment(User student, Assignment assignment) {
+        Course course = assignment.getLecture().getCourse();
+        if(assignmentService.isLastAssignment(assignment)){
+            student.getFinishedCourses().add(course);
+            student.getEnrolledCourses().remove(course);
+            userRepository.save(student);
+        }
     }
 
     private Assignment getAssignment(Long id) {

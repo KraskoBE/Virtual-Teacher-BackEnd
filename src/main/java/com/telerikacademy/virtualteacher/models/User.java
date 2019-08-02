@@ -85,12 +85,17 @@ public class User implements UserDetails {
     private Set<Course> enrolledCourses = new HashSet<>();
 
     @JsonIgnore
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    private Set<Course> finishedCourses = new HashSet<>();
+
+    @JsonIgnore
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Lecture> createdLectures = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Lecture> finishedLectures = new HashSet<>();
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)

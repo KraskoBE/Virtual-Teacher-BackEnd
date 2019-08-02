@@ -74,6 +74,14 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
         return loadFileByName(fileName);
     }
 
+    @Override
+    public boolean isLastAssignment(Assignment assignment) {
+        int lectureSize = assignment.getLecture().getCourse().getLectures().size();
+        Long lectureInnerId = assignment.getLecture().getInnerId();
+
+        return lectureInnerId == lectureSize;
+    }
+
     private Assignment getAssignment(Lecture lecture, User user) {
         return assignmentRepository.findByLectureAndUser(lecture, user)
                 .orElseThrow(() -> new NotFoundException("Assignment not found"));
