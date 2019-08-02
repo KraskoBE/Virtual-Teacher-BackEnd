@@ -11,16 +11,17 @@ import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Lazy))
 @Service("CourseService")
 public class CourseServiceImpl implements CourseService {
-
     private final ModelMapper modelMapper;
+    private final UserService userService;
 
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
@@ -53,19 +54,13 @@ public class CourseServiceImpl implements CourseService {
     public Course findByIdAndUser(Long courseId, User user) {
         Course course = findById(courseId);
 
-        if (hasRole(user, Role.Name.Admin) ||
+        if (userService.hasRole(user, Role.Name.Admin) ||
                 course.getAuthor().equals(user) ||
                 course.isSubmitted()
         )
             return course;
 
         throw new AccessDeniedException("You have no access to this course");
-    }
-
-    private boolean hasRole(User user, Role.Name roleName) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .anyMatch(roleName.toString()::equals);
     }
 
     @Override
@@ -90,7 +85,7 @@ public class CourseServiceImpl implements CourseService {
         if (rating < 1 || rating > 5) {
             throw new BadRequestException("Rating should be between 1 and 5");
         }
-        Course course = getCourse(courseId);
+        Course course = findById(courseId);
 
         if (courseRatingRepository.findByUserAndCourse(user, course).isPresent())
             throw new BadRequestException("You have already rated this course");
@@ -104,11 +99,6 @@ public class CourseServiceImpl implements CourseService {
 
         course.setTotalVotes(course.getCourseRatings().size());
         return courseRepository.save(course);
-    }
-
-    private Course getCourse(Long courseId) {
-        return courseRepository.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
 

@@ -4,7 +4,8 @@ import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Picture;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.PictureRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,16 +15,19 @@ import java.util.Optional;
 
 @Service("PictureService")
 public class PictureServiceImpl extends StorageServiceBase implements PictureService {
-    private PictureRepository pictureRepository;
-    private UserRepository userRepository;
+    private final PictureRepository pictureRepository;
+    private final UserService userService;
 
-    public PictureServiceImpl(PictureRepository pictureRepository, UserRepository userRepository) {
+    @Autowired
+    @Lazy
+    public PictureServiceImpl(PictureRepository pictureRepository,
+                              UserService userService) {
         super(
                 Paths.get("./uploads/pictures"),
                 "http://localhost:8080/api/pictures"
         );
         this.pictureRepository = pictureRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -33,7 +37,7 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
 
     @Override
     public Picture save(Long authorId, Long userId, MultipartFile pictureFile) {
-        User author = getUser(authorId);
+        User author = userService.findById(authorId);
 
         String fileType = allowedTypes.get(pictureFile.getContentType());
         String fileName = String.format("picture_U%d.%s", userId, fileType);
@@ -57,16 +61,11 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
 
     @Override
     public Resource findByUserId(Long userId) {
-        User user = getUser(userId);
+        User user = userService.findById(userId);
         Picture picture = pictureRepository.findByAuthor(user)
                 .orElseThrow(() -> new NotFoundException("Picture not found"));
 
         String fileName = picture.getFileName();
         return loadFileByName(fileName);
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }

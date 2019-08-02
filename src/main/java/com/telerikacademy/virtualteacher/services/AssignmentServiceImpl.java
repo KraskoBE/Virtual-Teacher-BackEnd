@@ -5,8 +5,8 @@ import com.telerikacademy.virtualteacher.models.Assignment;
 import com.telerikacademy.virtualteacher.models.Lecture;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.AssignmentRepository;
-import com.telerikacademy.virtualteacher.repositories.LectureRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,21 +15,22 @@ import java.nio.file.Paths;
 
 @Service("AssignmentService")
 public class AssignmentServiceImpl extends StorageServiceBase implements AssignmentService {
+    private final AssignmentRepository assignmentRepository;
+    private final LectureService lectureService;
+    private final UserService userService;
 
-    private AssignmentRepository assignmentRepository;
-    private UserRepository userRepository;
-    private LectureRepository lectureRepository;
-
+    @Lazy
+    @Autowired
     public AssignmentServiceImpl(AssignmentRepository assignmentRepository,
-                                 UserRepository userRepository,
-                                 LectureRepository lectureRepository) {
+                                 LectureService lectureService,
+                                 UserService userService) {
         super(
                 Paths.get("./uploads/assignments"),
                 "http://localhost:8080/api/assignments"
         );
         this.assignmentRepository = assignmentRepository;
-        this.userRepository = userRepository;
-        this.lectureRepository = lectureRepository;
+        this.userService = userService;
+        this.lectureService = lectureService;
     }
 
     @Override
@@ -42,9 +43,9 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
 
     @Override
     public Assignment save(Long authorId, Long lectureId, MultipartFile assignmentFile) {
-        User author = getUser(authorId);
+        User author = userService.findById(authorId);
 
-        Lecture lecture = getLecture(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
 
         String fileType = allowedTypes.get(assignmentFile.getContentType());
         String fileName = String.format("assignment_L%d_U%d.%s", lectureId, authorId, fileType);
@@ -64,9 +65,9 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
 
     @Override
     public Resource findByLectureIdAndUserId(Long lectureId, Long userId) {
-        Lecture lecture = getLecture(lectureId);
+        Lecture lecture = lectureService.findById(lectureId);
 
-        User user = getUser(userId);
+        User user = userService.findById(userId);
 
         Assignment assignment = getAssignment(lecture, user);
 
@@ -85,15 +86,5 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
     private Assignment getAssignment(Lecture lecture, User user) {
         return assignmentRepository.findByLectureAndUser(lecture, user)
                 .orElseThrow(() -> new NotFoundException("Assignment not found"));
-    }
-
-    private Lecture getLecture(Long lectureId) {
-        return lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new NotFoundException(String.format("Lecture with id:%d not found", lectureId)));
-    }
-
-    private User getUser(Long authorId) {
-        return userRepository.findById(authorId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id:%d not found", authorId)));
     }
 }

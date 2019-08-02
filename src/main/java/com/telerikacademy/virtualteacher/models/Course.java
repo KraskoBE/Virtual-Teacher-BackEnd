@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -26,7 +25,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
     private Long id;
-    
+
     @NotBlank
     @Size(min = 3, max = 25)
     @Column(name = "name", unique = true)
@@ -54,14 +53,14 @@ public class Course {
 
     @ManyToMany
     @JoinTable(name = "user_course",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "course_id")})
+            joinColumns = {@JoinColumn(name = "course_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> users = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "graduated_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
+            joinColumns = {@JoinColumn(name = "course_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> graduatedUsers = new HashSet<>();
 
     @NotNull

@@ -65,7 +65,7 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
 
         User user = userService.findById(userId);
 
-        if (userService.hasRole(user, Role.Name.Teacher))
+        if (userService.hasRole(user,Role.Name.Teacher))
             throw new BadRequestException("Already a teacher");
 
         userService.addRole(user, Role.Name.Teacher);

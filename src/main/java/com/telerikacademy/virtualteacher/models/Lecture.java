@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
-import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -59,8 +58,8 @@ public class Lecture {
 
     @ManyToMany
     @JoinTable(name = "user_lecture",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "lecture_id")})
+            joinColumns = {@JoinColumn(name = "lecture_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> users = new HashSet<>();
 
     @JsonIgnore

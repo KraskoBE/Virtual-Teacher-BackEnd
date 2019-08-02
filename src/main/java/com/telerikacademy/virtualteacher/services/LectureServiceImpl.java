@@ -3,6 +3,7 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.dtos.request.LectureRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.global.AlreadyExistsException;
+import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
@@ -20,6 +21,7 @@ public class LectureServiceImpl implements LectureService {
     private final VideoService videoService;
     private final TaskService taskService;
     private final CourseService courseService;
+    private final UserService userService;
 
     //private final ModelMapper modelMapper;
 
@@ -52,10 +54,10 @@ public class LectureServiceImpl implements LectureService {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Lecture not found"));
 
-        if (!isUserEnrolled(user, course) && !userHasRole(user, "Admin"))
+        if (!isUserEnrolled(user, course) && !userService.hasRole(user, Role.Name.Admin))
             throw new AccessDeniedException("You are not enrolled for this course");
 
-        if (!hasUserFinishedPrevious(user, course, lecture) && !userHasRole(user, "Admin"))
+        if (!hasUserFinishedPrevious(user, course, lecture) && !userService.hasRole(user, Role.Name.Admin))
             throw new AccessDeniedException("You need to finish the previous lecture first");
 
         return lecture;
@@ -66,6 +68,8 @@ public class LectureServiceImpl implements LectureService {
         checkIfAlreadyExists(lectureRequestDTO.getName());
 
         Course course = courseService.findById(lectureRequestDTO.getCourseId());
+        if (course.isSubmitted())
+            throw new BadRequestException("Course is already saved");
 
         Lecture lectureToSave = new Lecture();
 
@@ -107,9 +111,4 @@ public class LectureServiceImpl implements LectureService {
         return user.getFinishedLectures().contains(previousLecture);
     }
 
-    private boolean userHasRole(User user, String roleName) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .anyMatch(roleName::equals);
-    }
 }

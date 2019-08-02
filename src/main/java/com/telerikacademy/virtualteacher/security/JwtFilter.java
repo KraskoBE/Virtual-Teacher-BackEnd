@@ -1,12 +1,11 @@
 package com.telerikacademy.virtualteacher.security;
 
-import com.telerikacademy.virtualteacher.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,25 +16,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
 public class JwtFilter extends OncePerRequestFilter {
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @Autowired
-    private JwtProvider tokenProvider;
-
-    @Autowired
-    private UserService customUserDetailsService;
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+    @Qualifier("UserDetailsServiceImpl")
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt, request)) {
-                Long userId = tokenProvider.getUserIdFromJWT(jwt);
-                UserDetails userDetails = customUserDetailsService.findById(userId);
+            if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt, request)) {
+                String userEmail = jwtProvider.getEmailFromJWT(jwt);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

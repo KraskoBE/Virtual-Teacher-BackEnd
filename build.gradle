@@ -26,7 +26,9 @@ dependencies {
 
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
 
-    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.5'
+    // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '0.7.5'
+
 
     compile('org.springframework.security:spring-security-jwt')
     compile('org.springframework.boot:spring-boot-starter-security')

@@ -2,9 +2,6 @@ package com.telerikacademy.virtualteacher.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.telerikacademy.virtualteacher.validators.EmailConstraint;
-import com.telerikacademy.virtualteacher.validators.NameConstraint;
-import com.telerikacademy.virtualteacher.validators.PasswordConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +17,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -96,7 +96,6 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Lecture> finishedLectures = new HashSet<>();
 
-
     @JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private Set<Assignment> assignments = new HashSet<>();
@@ -105,6 +104,19 @@ public class User implements UserDetails {
     @NotNull
     @Column(name = "enabled")
     private boolean enabled = true;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @JsonIgnore
     @Override

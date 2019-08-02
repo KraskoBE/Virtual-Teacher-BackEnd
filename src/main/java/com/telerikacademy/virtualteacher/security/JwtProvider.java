@@ -28,13 +28,14 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getId()))
+                .claim("email", userPrincipal.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-     Long getUserIdFromJWT(String token) {
+    Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
@@ -43,7 +44,16 @@ public class JwtProvider {
         return Long.parseLong(claims.getSubject());
     }
 
-     boolean validateToken(String authToken, HttpServletRequest httpServletRequest){
+    String getEmailFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("email").toString();
+    }
+
+    boolean validateToken(String authToken, HttpServletRequest httpServletRequest) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;

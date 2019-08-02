@@ -1,9 +1,9 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.dtos.request.UserUpdateRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedException;
-import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
@@ -13,8 +13,6 @@ import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +23,6 @@ import java.util.List;
 @AllArgsConstructor
 @Service("UserService")
 public class UserServiceImpl implements UserService {
-
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -62,19 +59,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updatePassword(Long userId, String password, User currentUser) {
+        User oldUser = findById(userId);
+
+        if (oldUser.equals(currentUser) || hasRole(currentUser, Role.Name.Admin)) {
+            oldUser.setPassword(passwordEncoder.encode(password));
+            return userRepository.save(oldUser);
+        } else
+            throw new AccessDeniedException("You cannot edit this user");
+    }
+
+    @Override
+    public User updateInfo(Long userId, UserUpdateRequestDTO userUpdateRequestDTO, User currentUser) {
+        User oldUser = findById(userId);
+
+        if (oldUser.equals(currentUser) || hasRole(currentUser, Role.Name.Admin)) {
+            if (!userUpdateRequestDTO.getEmail().equals(oldUser.getEmail()))
+                if (!isEmailAvailable(userUpdateRequestDTO.getEmail()))
+                    throw new EmailAlreadyUsedException("Email already in use");
+
+            oldUser = modelMapper.map(userUpdateRequestDTO, User.class);
+            return userRepository.save(oldUser);
+        } else
+            throw new AccessDeniedException("You cannot edit this user");
+    }
+
+    @Override
     public void deleteById(Long userId) {
         userRepository.deleteById(userId);
     }
 
-    @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-    }
 
     @Override
     public Course enrollCourse(User user, Long courseId) {
-        Course course = getCourse(courseId, user);
+        Course course = courseService.findByIdAndUser(courseId, user);
 
         if (course.getUsers().contains(user)) {
             throw new BadRequestException("User is already enrolled to this course");
@@ -101,9 +119,10 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("You must be the lecture author to grade this!");
         }
 
-        if (assignment.getGrade() == 0) {
+        if (assignment.getGrade() != 0) {
             throw new BadRequestException("You have already graded this assignment");
         }
+
         assignment.setGrade(grade);
 
         finishCourseIfLastAssignment(student, assignment);
@@ -113,11 +132,12 @@ public class UserServiceImpl implements UserService {
 
     private void finishCourseIfLastAssignment(User student, Assignment assignment) {
         Course course = assignment.getLecture().getCourse();
-        if(assignmentService.isLastAssignment(assignment)){
-            student.getFinishedCourses().add(course);
-            student.getEnrolledCourses().remove(course);
-            userRepository.save(student);
+        if (assignmentService.isLastAssignment(assignment)) {
+            course.getUsers().remove(student);
+            course.getGraduatedUsers().add(student);
+            courseRepository.save(course);
         }
+        System.out.println(student.getFinishedCourses());
     }
 
     private Assignment getAssignment(Long id) {
@@ -158,18 +178,10 @@ public class UserServiceImpl implements UserService {
                 .anyMatch(roleName.toString()::equals);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return findByEmail(username);
-    }
 
     //---EOF interface methods
     private boolean isEmailAvailable(String email) {
         return findAll().stream()
                 .noneMatch(user -> user.getEmail().equals(email));
-    }
-
-    private Course getCourse(Long courseId, User user) {
-        return courseService.findByIdAndUser(courseId, user);
     }
 }

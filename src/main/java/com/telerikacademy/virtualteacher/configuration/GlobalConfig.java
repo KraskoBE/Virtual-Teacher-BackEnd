@@ -1,7 +1,10 @@
 package com.telerikacademy.virtualteacher.configuration;
 
 
+import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.models.User;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -70,6 +73,15 @@ public class GlobalConfig {
 
     @Bean
     public ModelMapper modelMapper() {
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+
+        modelMapper.addMappings(new PropertyMap<UserRequestDTO, User>() {
+            @Override
+            protected void configure() {
+                map().setEmail(source.getEmail());
+                map().setPassword(source.getPassword());
+            }
+        });
+        return modelMapper;
     }
 }

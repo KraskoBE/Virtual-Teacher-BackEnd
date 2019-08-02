@@ -1,10 +1,10 @@
 package com.telerikacademy.virtualteacher.controllers;
 
+import com.telerikacademy.virtualteacher.dtos.request.UserUpdateRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.AssignmentService;
 import com.telerikacademy.virtualteacher.services.CourseService;
 import com.telerikacademy.virtualteacher.services.TeacherRequestService;
 import com.telerikacademy.virtualteacher.services.UserService;
@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,16 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('Student')")
+    public ResponseEntity findCurrentUser(@CurrentUser User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.findById(user.getId()),
+                        UserResponseDTO.class
+                )
+        );
+    }
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping("/{id}")
@@ -77,7 +88,17 @@ public class UserController {
         );
     }
 
-
+    @PreAuthorize("hasRole('Student')")
+    @PutMapping("/{id}/updateInfo")
+    public ResponseEntity updateInfo(@PathVariable(name = "id") final Long userId,
+                                     @CurrentUser final User currentUser,
+                                     @Valid @RequestBody final UserUpdateRequestDTO userUpdateRequestDTO) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.updateInfo(userId, userUpdateRequestDTO, currentUser),
+                        UserResponseDTO.class)
+        );
+    }
 
     @PreAuthorize("hasRole('Student')")
     @PutMapping("/{id}/updatePicture")
