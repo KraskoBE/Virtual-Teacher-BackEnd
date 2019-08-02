@@ -58,6 +58,12 @@ public class Course {
             inverseJoinColumns = {@JoinColumn(name = "course_id")})
     private Set<User> users = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name = "graduated_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private Set<User> graduatedUsers = new HashSet<>();
+
     @NotNull
     @Column(name = "average_rating")
     private double averageRating = 0.0;

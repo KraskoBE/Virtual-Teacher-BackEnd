@@ -96,14 +96,18 @@ public class UserServiceImpl implements UserService {
         if (!lecture.getAuthor().getId().equals(teacher.getId())) {
             throw new BadRequestException("You must be the lecture author to grade this!");
         }
+
+        if (assignment.getGrade() == 0) {
+            throw new BadRequestException("You have already graded this assignment");
+        }
         assignment.setGrade(grade);
 
-        finishLectureIfLastAssignment(student, assignment);
+        finishCourseIfLastAssignment(student, assignment);
 
         return assignmentRepository.save(assignment);
     }
 
-    private void finishLectureIfLastAssignment(User student, Assignment assignment) {
+    private void finishCourseIfLastAssignment(User student, Assignment assignment) {
         Course course = assignment.getLecture().getCourse();
         if(assignmentService.isLastAssignment(assignment)){
             student.getFinishedCourses().add(course);

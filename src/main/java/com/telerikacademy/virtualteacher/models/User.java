@@ -85,7 +85,7 @@ public class User implements UserDetails {
     private Set<Course> enrolledCourses = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "graduatedUsers", fetch = FetchType.EAGER)
     private Set<Course> finishedCourses = new HashSet<>();
 
     @JsonIgnore
