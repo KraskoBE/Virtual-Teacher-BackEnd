@@ -7,6 +7,7 @@ import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
+import com.telerikacademy.virtualteacher.services.contracts.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

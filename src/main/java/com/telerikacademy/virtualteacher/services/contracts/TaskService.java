@@ -1,4 +1,4 @@
-package com.telerikacademy.virtualteacher.services;
+package com.telerikacademy.virtualteacher.services.contracts;
 
 import com.telerikacademy.virtualteacher.models.Task;
 import org.springframework.core.io.Resource;

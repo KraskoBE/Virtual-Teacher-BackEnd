@@ -5,7 +5,7 @@ import com.telerikacademy.virtualteacher.dtos.request.LectureRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.LectureResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.LectureService;
+import com.telerikacademy.virtualteacher.services.contracts.LectureService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;

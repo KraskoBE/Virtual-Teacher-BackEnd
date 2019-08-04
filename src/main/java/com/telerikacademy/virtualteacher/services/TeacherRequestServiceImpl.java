@@ -7,6 +7,8 @@ import com.telerikacademy.virtualteacher.models.Role;
 import com.telerikacademy.virtualteacher.models.TeacherRequest;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.TeacherRequestRepository;
+import com.telerikacademy.virtualteacher.services.contracts.TeacherRequestService;
+import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +76,7 @@ public class TeacherRequestServiceImpl implements TeacherRequestService {
         return teacherRequestRepository.save(teacherRequest);
     }
 
-    //
+
     private void checkIfAlreadyExists(User user) {
         if (teacherRequestRepository.findByUser(user).isPresent())
             throw new AlreadyExistsException("You have already requested to become a teacher");
