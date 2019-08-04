@@ -17,5 +17,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
     Optional<Lecture> findByNameIgnoreCase(String name);
 
-    List<Lecture> findByCourse_Id(Long courseId);
+    List<Lecture> findAllByCourse_Id(Long courseId);
+
 }
