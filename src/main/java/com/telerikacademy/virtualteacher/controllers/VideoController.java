@@ -3,7 +3,7 @@ package com.telerikacademy.virtualteacher.controllers;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.models.Video;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.VideoService;
+import com.telerikacademy.virtualteacher.services.contracts.VideoService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;

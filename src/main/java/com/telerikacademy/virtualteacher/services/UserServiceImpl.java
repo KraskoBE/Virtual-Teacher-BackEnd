@@ -11,12 +11,18 @@ import com.telerikacademy.virtualteacher.repositories.AssignmentRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
+import com.telerikacademy.virtualteacher.services.contracts.AssignmentService;
+import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.PictureService;
+import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -53,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-        addRole(user, Role.Name.Student);
+        setRole(user.getId(), Role.Name.Student);
 
         return userRepository.save(user);
     }
@@ -160,15 +166,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addRole(User user, Role.Name roleName) {
-        if (user.getRoles().stream()
-                .map(Role::getName)
-                .anyMatch(roleName.toString()::equals))
-            return;
-        Role role = roleRepository.findByName(roleName.toString())
+    public User setRole(Long userId, Role.Name roleName) {
+        User user = findById(userId);
+
+        Collection<Role> newRoles = new HashSet<>();
+
+        switch (roleName) {
+            case Admin:
+                newRoles.add(getRole(Role.Name.Admin));
+            case Teacher:
+                newRoles.add(getRole(Role.Name.Teacher));
+            case Student:
+                newRoles.add(getRole(Role.Name.Student));
+                break;
+            default:
+                throw new BadRequestException("No such role exists");
+        }
+
+        user.setRoles(newRoles);
+        return userRepository.save(user);
+    }
+
+    private Role getRole(Role.Name role) {
+        return roleRepository.findByName(role.name())
                 .orElseThrow(() -> new NotFoundException("Role not found"));
-        user.getRoles().add(role);
-        userRepository.save(user);
     }
 
     @Override

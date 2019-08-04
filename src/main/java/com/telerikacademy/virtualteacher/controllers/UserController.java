@@ -5,9 +5,9 @@ import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.CourseService;
-import com.telerikacademy.virtualteacher.services.TeacherRequestService;
-import com.telerikacademy.virtualteacher.services.UserService;
+import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.TeacherRequestService;
+import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:3000",
-        allowCredentials = "true",
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE})
 @RestController
 @RequestMapping("/api/users")
 @AllArgsConstructor

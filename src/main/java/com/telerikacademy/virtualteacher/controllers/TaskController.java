@@ -3,7 +3,7 @@ package com.telerikacademy.virtualteacher.controllers;
 import com.telerikacademy.virtualteacher.models.Task;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.TaskService;
+import com.telerikacademy.virtualteacher.services.contracts.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;

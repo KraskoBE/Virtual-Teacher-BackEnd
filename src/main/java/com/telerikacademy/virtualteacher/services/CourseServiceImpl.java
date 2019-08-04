@@ -9,6 +9,8 @@ import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.CourseRatingRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
+import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -39,8 +41,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Page<Course> findAllByTopic(Long topicId, Pageable pageable) {
-        Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new NotFoundException("Topic not found"));
+        Topic topic = findTopicById(topicId);
         return courseRepository.findAllByTopicAndSubmittedIsTrue(topic, pageable);
     }
 

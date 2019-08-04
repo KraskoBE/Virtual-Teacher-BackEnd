@@ -1,7 +1,7 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 
-import com.telerikacademy.virtualteacher.services.PictureService;
+import com.telerikacademy.virtualteacher.services.contracts.PictureService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;

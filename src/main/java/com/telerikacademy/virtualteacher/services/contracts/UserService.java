@@ -1,4 +1,4 @@
-package com.telerikacademy.virtualteacher.services;
+package com.telerikacademy.virtualteacher.services.contracts;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.request.UserUpdateRequestDTO;
@@ -30,7 +30,7 @@ public interface UserService {
 
     Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher);
 
-    void addRole(User user, Role.Name roleName);
+    User setRole(Long userId, Role.Name roleName);
 
     boolean hasRole(User user, Role.Name roleName);
 }
