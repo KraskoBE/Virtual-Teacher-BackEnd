@@ -57,9 +57,10 @@ public class UserServiceImpl implements UserService {
 
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-        setRole(user.getId(), Role.Name.Student);
 
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return setRole(user.getId(), Role.Name.Student);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public List<Lecture> findAllByCourse(Course course) {
-        return lectureRepository.findByCourse_Id(course.getId());
+        return lectureRepository.findAllByCourse_Id(course.getId());
     }
 
     @Override
