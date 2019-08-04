@@ -14,19 +14,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
-
-@CrossOrigin(origins = "http://localhost:3000",
-        allowCredentials = "true",
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE})
 
 @AllArgsConstructor
 @RestController

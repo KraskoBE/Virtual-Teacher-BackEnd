@@ -19,13 +19,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:3000",
-        allowCredentials = "true",
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE})
 @RestController
 @RequestMapping("/api/users")
 @AllArgsConstructor

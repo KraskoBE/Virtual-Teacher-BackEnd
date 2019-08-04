@@ -8,13 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:3000",
-        allowCredentials = "true",
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET,
-                RequestMethod.POST,
-                RequestMethod.PUT,
-                RequestMethod.DELETE})
 @RestController
 @RequestMapping("/api/teachers")
 @AllArgsConstructor
