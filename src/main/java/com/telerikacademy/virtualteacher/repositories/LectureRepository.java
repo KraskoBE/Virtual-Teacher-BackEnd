@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
@@ -15,4 +16,5 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
     void deleteById(@Param("lectureId") Long id);
 
     Optional<Lecture> findByNameIgnoreCase(String name);
+    List<Lecture> findByCourse_Id(Long courseId);
 }

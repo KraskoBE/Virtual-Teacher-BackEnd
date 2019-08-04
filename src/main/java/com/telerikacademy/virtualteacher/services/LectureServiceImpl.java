@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service("LectureService")
@@ -39,11 +38,7 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public List<Lecture> findAllByCourse(Course course) {
-        return lectureRepository.findAll()
-                .stream()
-                .filter(x -> x.getCourse().getId().equals(course.getId()))
-                .collect(Collectors.toList());
-
+        return lectureRepository.findByCourse_Id(course.getId());
     }
 
     @Override
