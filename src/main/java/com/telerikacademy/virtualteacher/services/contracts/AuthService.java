@@ -1,9 +1,12 @@
 package com.telerikacademy.virtualteacher.services.contracts;
 
 import com.telerikacademy.virtualteacher.dtos.request.AuthenticationRequestDTO;
-import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.dtos.response.AuthenticationResponseDTO;
 
 public interface AuthService {
 
-    User login(AuthenticationRequestDTO authenticationRequestDTO);
+    AuthenticationResponseDTO login(AuthenticationRequestDTO authenticationRequestDTO);
+
+    AuthenticationResponseDTO register(UserRequestDTO userRequestDTO);
 }
