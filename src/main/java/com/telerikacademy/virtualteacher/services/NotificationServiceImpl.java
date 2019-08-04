@@ -29,11 +29,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<Notification> findByUser(User user) {
-        return notificationRepository.findAll()
+    public List<Notification> getUserUnseenNotifications(User user) {
+        return notificationRepository.findByReceiver(user)
                 .stream()
-                .filter(x -> x.getReceiver().equals(user))
+                .filter(x -> !x.isSeen())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Notification> findAllByUser(User user) {
+        return notificationRepository.findByReceiver(user);
     }
 
     @Override

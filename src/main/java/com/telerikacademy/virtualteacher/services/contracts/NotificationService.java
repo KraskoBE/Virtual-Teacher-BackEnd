@@ -11,11 +11,13 @@ public interface NotificationService {
 
     Notification findById(Long id);
 
-    List<Notification> findByUser(User user);
+    List<Notification> findAllByUser(User user);
 
     Notification save(Notification notification);
 
     Notification sendNotification(User receiver, String message);
 
     Notification markAsSeen(Long id);
+
+    List<Notification> getUserUnseenNotifications(User user);
 }

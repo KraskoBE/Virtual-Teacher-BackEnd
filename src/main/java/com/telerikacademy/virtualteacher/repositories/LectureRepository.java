@@ -16,5 +16,7 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
     void deleteById(@Param("lectureId") Long id);
 
     Optional<Lecture> findByNameIgnoreCase(String name);
+
     List<Lecture> findAllByCourse_Id(Long courseId);
+
 }

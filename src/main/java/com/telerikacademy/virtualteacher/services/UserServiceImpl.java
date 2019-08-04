@@ -186,8 +186,6 @@ public class UserServiceImpl implements UserService {
                 throw new BadRequestException("No such role exists");
         }
 
-        notificationService.sendNotification(user,"Your role has been updated to: "+roleName.name());
-
         user.setRoles(newRoles);
         return userRepository.save(user);
     }
