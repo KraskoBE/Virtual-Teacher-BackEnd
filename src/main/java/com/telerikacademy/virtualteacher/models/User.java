@@ -103,7 +103,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @NotNull
     @Column(name = "enabled")
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     @Override
     public boolean equals(Object o) {

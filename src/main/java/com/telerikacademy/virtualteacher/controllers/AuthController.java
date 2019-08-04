@@ -8,6 +8,7 @@ import com.telerikacademy.virtualteacher.security.JwtProvider;
 import com.telerikacademy.virtualteacher.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,7 @@ public class AuthController {
     private final JwtProvider jwtProvider;
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/login")
