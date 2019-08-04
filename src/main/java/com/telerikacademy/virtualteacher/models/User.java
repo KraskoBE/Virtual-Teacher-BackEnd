@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.aspectj.weaver.ast.Not;
 import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
@@ -77,6 +78,10 @@ public class User implements UserDetails {
     private Collection<Role> roles = new HashSet<>();
 
     @JsonIgnore
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.EAGER)
+    private Set<Notification> notifications = new HashSet<>();
+
+    @JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private Set<Course> createdCourses = new HashSet<>();
 
@@ -103,7 +108,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @NotNull
     @Column(name = "enabled")
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     @Override
     public boolean equals(Object o) {

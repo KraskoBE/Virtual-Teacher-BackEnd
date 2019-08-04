@@ -11,6 +11,7 @@ import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
+import org.springframework.expression.spel.ast.Assign;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +43,12 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
         allowedTypes.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx");
         allowedTypes.put("application/msword", "doc");
         allowedTypes.put("text/x-java-source,java", "java");
+    }
+
+    @Override
+    public Assignment findById(Long id) {
+        return assignmentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Assignment not found"));
     }
 
     @Override

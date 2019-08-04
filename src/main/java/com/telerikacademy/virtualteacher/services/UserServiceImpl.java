@@ -11,10 +11,7 @@ import com.telerikacademy.virtualteacher.repositories.AssignmentRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.RoleRepository;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
-import com.telerikacademy.virtualteacher.services.contracts.AssignmentService;
-import com.telerikacademy.virtualteacher.services.contracts.CourseService;
-import com.telerikacademy.virtualteacher.services.contracts.PictureService;
-import com.telerikacademy.virtualteacher.services.contracts.UserService;
+import com.telerikacademy.virtualteacher.services.contracts.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final PictureService pictureService;
     private final AssignmentService assignmentService;
     private final CourseService courseService;
+    private final NotificationService notificationService;
 
     @Override
     public List<User> findAll() {
@@ -131,6 +129,10 @@ public class UserServiceImpl implements UserService {
 
         assignment.setGrade(grade);
 
+        String lectureName = assignment.getLecture().getTask().getLecture().getName();
+        String message = String.format("Your assignment for lecure %s has been graded with %d", lectureName, grade);
+        notificationService.sendNotification(assignment.getAuthor(), message);
+
         finishCourseIfLastAssignment(student, assignment);
 
         return assignmentRepository.save(assignment);
@@ -182,6 +184,8 @@ public class UserServiceImpl implements UserService {
             default:
                 throw new BadRequestException("No such role exists");
         }
+
+        notificationService.sendNotification(user,"Your role has been updated to: "+roleName.name());
 
         user.setRoles(newRoles);
         return userRepository.save(user);
