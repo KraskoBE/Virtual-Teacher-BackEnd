@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordConstraint {
-    String message() default "Minimum eight characters, at least one letter and one number:";
+    String message() default "Minimum eight characters, at least one letter and one number";
 
     Class<?>[] groups() default {};
 

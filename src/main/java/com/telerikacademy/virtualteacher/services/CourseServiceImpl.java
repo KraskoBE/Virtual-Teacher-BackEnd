@@ -10,6 +10,7 @@ import com.telerikacademy.virtualteacher.repositories.CourseRatingRepository;
 import com.telerikacademy.virtualteacher.repositories.CourseRepository;
 import com.telerikacademy.virtualteacher.repositories.TopicRepository;
 import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.ThumbnailService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class CourseServiceImpl implements CourseService {
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final ThumbnailService thumbnailService;
 
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
@@ -69,9 +71,18 @@ public class CourseServiceImpl implements CourseService {
 
         checkIfAlreadyExists(course.getName());
 
-        Course courseToSave = modelMapper.map(course, Course.class);
+        Course courseToSave = modelMapper.map(course,Course.class);
+
+        System.out.println(courseToSave.toString());
+
         courseToSave.setAuthor(author);
         courseToSave.setTopic(findTopicById(course.getTopic()));
+        courseToSave.setThumbnail(null);
+
+        courseRepository.save(courseToSave);
+
+        Thumbnail thumbnail = thumbnailService.save(author.getId(), courseToSave.getId(), course.getThumbnailFile());
+        courseToSave.setThumbnail(thumbnail);
 
         return courseRepository.save(courseToSave);
     }

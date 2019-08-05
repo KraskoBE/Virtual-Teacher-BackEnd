@@ -67,8 +67,8 @@ public class CourseController {
     }
 
     @PreAuthorize("hasRole('Teacher')")
-    @PostMapping
-    public ResponseEntity save(@Valid @RequestBody final CourseRequestDTO course,
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity save(@Valid @ModelAttribute final CourseRequestDTO course,
                                @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(

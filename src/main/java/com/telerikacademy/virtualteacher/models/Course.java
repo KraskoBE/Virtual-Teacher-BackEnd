@@ -20,7 +20,6 @@ import java.util.Set;
 @Entity
 @Table(name = "courses")
 public class Course {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
@@ -46,6 +45,10 @@ public class Course {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @OneToOne
+    @JoinColumn(name = "thumbnail")
+    private Thumbnail thumbnail;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course")

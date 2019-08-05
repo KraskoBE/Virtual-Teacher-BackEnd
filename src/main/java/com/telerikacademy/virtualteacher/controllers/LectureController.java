@@ -33,6 +33,7 @@ public class LectureController {
         );
     }
 
+    @PreAuthorize("hasRole('Teacher')")
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity save(@Valid @ModelAttribute final LectureRequestDTO lectureRequestDTO,
                                @CurrentUser final User user) {

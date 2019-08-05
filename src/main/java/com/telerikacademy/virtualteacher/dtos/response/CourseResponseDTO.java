@@ -1,6 +1,7 @@
 package com.telerikacademy.virtualteacher.dtos.response;
 
 import com.telerikacademy.virtualteacher.models.Lecture;
+import com.telerikacademy.virtualteacher.models.Thumbnail;
 import com.telerikacademy.virtualteacher.models.Topic;
 import com.telerikacademy.virtualteacher.models.User;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,8 @@ public class CourseResponseDTO {
     private Topic topic;
 
     private String description;
+
+    private Thumbnail thumbnail;
 
     private boolean submitted;
 

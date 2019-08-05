@@ -64,8 +64,8 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
     @Override
     public Resource findByUserId(Long userId) {
         User user = userService.findById(userId);
-        Picture picture = pictureRepository.findByAuthor(user)
-                .orElseThrow(() -> new NotFoundException("Picture not found"));
+        Picture picture = user.getPicture();
+        if (picture == null) throw new NotFoundException("Picture not found");
 
         String fileName = picture.getFileName();
         return loadFileByName(fileName);
