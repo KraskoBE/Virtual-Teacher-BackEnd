@@ -2,10 +2,10 @@ package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.AuthenticationRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
+import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.contracts.AuthService;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +21,6 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
-    private final ModelMapper modelMapper;
-    private final ApplicationEventPublisher eventPublisher;
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/login")
@@ -34,5 +32,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity register(@Valid @RequestBody final UserRequestDTO userRequest) {
         return ResponseEntity.ok().body(authService.register(userRequest));
+    }
+
+    @PreAuthorize("hasRole('Student')")
+    @PostMapping("/validate")
+    public ResponseEntity validate(@CurrentUser User currentUser)
+    {
+        return ResponseEntity.ok().body(authService.validateToken(currentUser));
     }
 }

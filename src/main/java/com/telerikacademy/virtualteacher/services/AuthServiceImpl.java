@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
         User authenticatedUsed = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        AuthenticationResponseDTO authenticationResponse = modelMapper.map(authenticatedUsed,AuthenticationResponseDTO.class);
+        AuthenticationResponseDTO authenticationResponse = modelMapper.map(authenticatedUsed, AuthenticationResponseDTO.class);
         authenticationResponse.setToken(jwtProvider.generateToken(authentication));
 
         return authenticationResponse;
@@ -54,6 +54,16 @@ public class AuthServiceImpl implements AuthService {
 
         AuthenticationResponseDTO authenticationResponse = modelMapper.map(newUser, AuthenticationResponseDTO.class);
         authenticationResponse.setToken(jwtProvider.generateToken(authentication));
+
+        return authenticationResponse;
+    }
+
+    @Override
+    public AuthenticationResponseDTO validateToken(User user) {
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+
+        AuthenticationResponseDTO authenticationResponse = modelMapper.map(user, AuthenticationResponseDTO.class);
+        authenticationResponse.setToken(jwtProvider.generateToken(currentAuth));
 
         return authenticationResponse;
     }
