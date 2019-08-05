@@ -26,5 +26,11 @@ public class NotificationController {
     public ResponseEntity seeNotification(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(notificationService.markAsSeen(id));
     }
+    @PreAuthorize("hasRole('Admin')")
+    @PostMapping("/send")
+    public ResponseEntity sendNotification(@RequestParam("receiverId") Long receiverId,
+                                           @RequestParam("message") String message) {
+        return ResponseEntity.ok().body(notificationService.sendNotification(userService.findById(receiverId),message));
+    }
 
 }
