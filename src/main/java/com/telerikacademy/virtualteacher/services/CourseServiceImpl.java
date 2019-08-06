@@ -37,7 +37,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Page<Course> findByOrderedByAverageRating(Pageable pageable) {
+    public Page<Course> findAllOrderedByIdDesc(Pageable pageable) {
+        return courseRepository.findBySubmittedTrueOrderByIdDesc(pageable);
+    }
+
+    @Override
+    public Page<Course> findAllByOrderedByAverageRating(Pageable pageable) {
         return courseRepository.findBySubmittedTrueOrderByAverageRatingDescTotalVotesDesc(pageable);
     }
 
@@ -71,7 +76,7 @@ public class CourseServiceImpl implements CourseService {
 
         checkIfAlreadyExists(course.getName());
 
-        Course courseToSave = modelMapper.map(course,Course.class);
+        Course courseToSave = modelMapper.map(course, Course.class);
 
         System.out.println(courseToSave.toString());
 

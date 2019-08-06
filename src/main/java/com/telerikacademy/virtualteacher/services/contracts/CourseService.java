@@ -10,7 +10,9 @@ import org.springframework.data.domain.Pageable;
 public interface CourseService {
     Page<Course> findAll(Pageable pageable);
 
-    Page<Course> findByOrderedByAverageRating(Pageable pageable);
+    Page<Course> findAllOrderedByIdDesc(Pageable pageable);
+
+    Page<Course> findAllByOrderedByAverageRating(Pageable pageable);
 
     Page<Course> findAllByTopic(Long topicId, Pageable pageable);
 

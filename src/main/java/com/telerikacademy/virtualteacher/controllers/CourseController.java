@@ -24,8 +24,7 @@ public class CourseController {
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping
-    public ResponseEntity findAll(@PageableDefault Pageable pageable)
-    {
+    public ResponseEntity findAll(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findAll(pageable)
                         .map(course -> modelMapper.map(
@@ -35,10 +34,21 @@ public class CourseController {
         );
     }
 
-    @GetMapping("/top")
-    public ResponseEntity findOrderedByAverageRating(@PageableDefault Pageable pageable) {
+    @GetMapping("/recent")
+    public ResponseEntity findAllOrderedById(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok().body(
-                courseService.findByOrderedByAverageRating(pageable)
+                courseService.findAllOrderedByIdDesc(pageable)
+                        .map(course -> modelMapper.map(
+                                course,
+                                CourseResponseDTO.class)
+                        )
+        );
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity findAllOrderedByAverageRating(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok().body(
+                courseService.findAllByOrderedByAverageRating(pageable)
                         .map(course -> modelMapper.map(
                                 course,
                                 CourseResponseDTO.class)
