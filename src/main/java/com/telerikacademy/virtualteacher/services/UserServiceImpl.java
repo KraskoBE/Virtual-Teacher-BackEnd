@@ -172,6 +172,7 @@ public class UserServiceImpl implements UserService {
     public User setRole(Long userId, Role.Name roleName) {
         User user = findById(userId);
 
+
         Collection<Role> newRoles = new HashSet<>();
 
         switch (roleName) {
