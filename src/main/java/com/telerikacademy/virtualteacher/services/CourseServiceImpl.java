@@ -47,9 +47,9 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Page<Course> findAllByTopic(Long topicId, Pageable pageable) {
+    public Page<Course> findAllByTopicOrderedByAverageRatingDesc(Long topicId, Pageable pageable) {
         Topic topic = findTopicById(topicId);
-        return courseRepository.findAllByTopicAndSubmittedIsTrue(topic, pageable);
+        return courseRepository.findByTopicAndSubmittedIsTrueOrderByAverageRatingDesc(topic, pageable);
     }
 
     @Override

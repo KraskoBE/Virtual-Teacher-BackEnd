@@ -14,7 +14,7 @@ public interface CourseService {
 
     Page<Course> findAllByOrderedByAverageRating(Pageable pageable);
 
-    Page<Course> findAllByTopic(Long topicId, Pageable pageable);
+    Page<Course> findAllByTopicOrderedByAverageRatingDesc(Long topicId, Pageable pageable);
 
     Course findById(Long courseId);
 

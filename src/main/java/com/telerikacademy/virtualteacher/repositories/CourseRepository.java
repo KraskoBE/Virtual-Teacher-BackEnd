@@ -17,5 +17,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Page<Course> findBySubmittedTrueOrderByAverageRatingDescTotalVotesDesc(Pageable pageable);
 
-    Page<Course> findAllByTopicAndSubmittedIsTrue(Topic topic, Pageable pageable);
+    Page<Course> findByTopicAndSubmittedIsTrueOrderByAverageRatingDesc(Topic topic, Pageable pageable);
 }

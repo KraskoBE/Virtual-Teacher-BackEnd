@@ -57,11 +57,14 @@ public class CourseController {
     }
 
     @GetMapping("/topic/{id}")
-    public ResponseEntity findAllByTopic(@PathVariable(name = "id") Long topicId,
-                                         @PageableDefault Pageable pageable) {
+    public ResponseEntity findAllByTopicOrderedByAverageRating(@PathVariable(name = "id") Long topicId,
+                                                               @PageableDefault Pageable pageable) {
         return ResponseEntity.ok().body(
-                courseService.findAllByTopic(topicId, pageable).stream()
-                        .map(course -> modelMapper.map(course, CourseResponseDTO.class))
+                courseService.findAllByTopicOrderedByAverageRatingDesc(topicId, pageable)
+                        .map(course -> modelMapper.map(
+                                course,
+                                CourseResponseDTO.class)
+                        )
         );
     }
 
