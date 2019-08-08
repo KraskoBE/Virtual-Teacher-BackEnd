@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(UserRequestDTO userRequestDTO) {
-        if (!isEmailAvailable(userRequestDTO.getEmail()))
+        if (isEmailAlreadyUsed(userRequestDTO.getEmail()))
             throw new EmailAlreadyUsedException("Email already in use");
 
         User user = modelMapper.map(userRequestDTO, User.class);
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         if (oldUser.equals(currentUser) || hasRole(currentUser, Role.Name.Admin)) {
             if (!userUpdateRequestDTO.getEmail().equals(oldUser.getEmail()))
-                if (!isEmailAvailable(userUpdateRequestDTO.getEmail()))
+                if (isEmailAlreadyUsed(userUpdateRequestDTO.getEmail()))
                     throw new EmailAlreadyUsedException("Email already in use");
 
             oldUser = modelMapper.map(userUpdateRequestDTO, User.class);
@@ -205,8 +205,7 @@ public class UserServiceImpl implements UserService {
 
 
     //---EOF interface methods
-    private boolean isEmailAvailable(String email) {
-        return findAll().stream()
-                .noneMatch(user -> user.getEmail().equals(email));
+    private boolean isEmailAlreadyUsed(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 }
