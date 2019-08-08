@@ -1,6 +1,7 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.models.User;
+import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.contracts.NotificationService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,9 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final UserService userService;
 
-    @GetMapping("/unseen/{id}")
-    public ResponseEntity getUserUnseenNotifications(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(notificationService.getUserUnseenNotifications(userService.findById(id)));
+    @GetMapping("/unseen")
+    public ResponseEntity getUserUnseenNotifications(@CurrentUser User user) {
+        return ResponseEntity.ok().body(notificationService.getUserUnseenNotifications(user));
     }
 
     @PutMapping("/see/{id}")
