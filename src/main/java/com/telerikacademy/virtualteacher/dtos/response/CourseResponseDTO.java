@@ -26,6 +26,8 @@ public class CourseResponseDTO {
 
     private Thumbnail thumbnail;
 
+    private User author;
+
     private boolean submitted;
 
     private Set<Lecture> lectures;
