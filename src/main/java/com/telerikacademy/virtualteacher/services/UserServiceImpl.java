@@ -83,7 +83,9 @@ public class UserServiceImpl implements UserService {
                 if (isEmailAlreadyUsed(userUpdateRequestDTO.getEmail()))
                     throw new EmailAlreadyUsedException("Email already in use");
 
-            oldUser = modelMapper.map(userUpdateRequestDTO, User.class);
+            oldUser.setFirstName(userUpdateRequestDTO.getFirstName());
+            oldUser.setLastName(userUpdateRequestDTO.getLastName());
+            oldUser.setEmail(userUpdateRequestDTO.getEmail());
             return userRepository.save(oldUser);
         } else
             throw new AccessDeniedException("You cannot edit this user");

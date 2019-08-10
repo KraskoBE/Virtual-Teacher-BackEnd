@@ -9,14 +9,7 @@ VALUES ('Business'),
        ('Development'),
        ('Finance&Accounting'),
        ('Health&Fitness'),
-       ('IT&Software'),
-       ('Lifestyle'),
-       ('Marketing'),
-       ('Music'),
-       ('Office Productivity'),
-       ('Personal Development'),
-       ('Teaching&Academics'),
-       ('Photography');
+       ('IT&Software')
        
 INSERT INTO `roles` (`name`)
 VALUES ('Student'),

@@ -189,7 +189,6 @@ public class UserServiceTests {
 
         //Act
         when(userRepository.findById(2L)).thenReturn(Optional.of(toBeEdited));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(currentUser));
         userService.updatePassword(2L,"newPassword",currentUser);
 
         //Assert
