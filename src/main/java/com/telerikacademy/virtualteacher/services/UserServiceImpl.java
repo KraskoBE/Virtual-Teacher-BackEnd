@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
         assignment.setGrade(grade);
 
-        String lectureName = assignment.getLecture().getTask().getLecture().getName();
+        String lectureName = assignment.getLecture().getName();
         String message = String.format("Your assignment for lecure %s has been graded with %d", lectureName, grade);
         notificationService.sendNotification(assignment.getAuthor(), message);
 
@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
             course.getGraduatedUsers().add(student);
             courseRepository.save(course);
         }
-        System.out.println(student.getFinishedCourses());
+        //System.out.println(student.getFinishedCourses());
     }
 
     private Assignment getAssignment(Long id) {

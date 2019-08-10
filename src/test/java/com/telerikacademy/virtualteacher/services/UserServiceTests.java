@@ -3,11 +3,14 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.dtos.request.UserRequestDTO;
 import com.telerikacademy.virtualteacher.exceptions.auth.AccessDeniedException;
 import com.telerikacademy.virtualteacher.exceptions.auth.EmailAlreadyUsedException;
+import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
-import com.telerikacademy.virtualteacher.models.Role;
-import com.telerikacademy.virtualteacher.models.User;
-import com.telerikacademy.virtualteacher.repositories.RoleRepository;
-import com.telerikacademy.virtualteacher.repositories.UserRepository;
+import com.telerikacademy.virtualteacher.models.*;
+import com.telerikacademy.virtualteacher.repositories.*;
+import com.telerikacademy.virtualteacher.services.contracts.AssignmentService;
+import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.LectureService;
+import com.telerikacademy.virtualteacher.services.contracts.PictureService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,16 +18,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceTests {
 
     @Mock
@@ -34,7 +39,23 @@ public class UserServiceTests {
     @Mock
     ModelMapper modelMapper;
     @Mock
+    PictureService pictureService;
+    @Mock
+    CourseService courseService;
+    @Mock
+    CourseRepository courseRepository;
+    @Mock
     PasswordEncoder passwordEncoder;
+    @Mock
+    AssignmentRepository assignmentRepository;
+    @Mock
+    AssignmentService assignmentService;
+    @Mock
+    LectureService lectureService;
+    @Mock
+    LectureRepository lectureRepository;
+    @Mock
+    NotificationServiceImpl notificationService;
 
     @InjectMocks
     UserServiceImpl userService;
@@ -69,7 +90,6 @@ public class UserServiceTests {
         //Assert
         userService.findById(1L);
     }
-
 
     @Test
     public void save_Should_SaveUser_When_EmailIsNotAlreadyTaken() {
@@ -174,6 +194,280 @@ public class UserServiceTests {
 
         //Assert
         verify(userRepository, times(1)).save(toBeEdited);
+    }
+
+    @Test
+    public void updatePicture_Should_saveUser_When_Successful() {
+        //Arrange
+        User toUpdate = new User("email2@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        toUpdate.setId(1L);
+
+        byte[] content = new byte[20];
+        new Random().nextBytes(content);
+
+        final String name = "picture.jpg";
+        final String type = "image/jpeg";
+        MockMultipartFile file = new MockMultipartFile(name, name, type,content);
+        Picture picture = new Picture(name, type, file.getSize(), name, toUpdate);
+
+        //Act
+        when(userRepository.findById(1L)).thenReturn(Optional.of(toUpdate));
+        when(pictureService.save(1L,1L, file)).thenReturn(picture);
+        userService.updatePicture(1L, toUpdate ,file);
+
+        //Assert
+        verify(userRepository, times(1)).save(toUpdate);
+    }
+
+    @Test (expected = AccessDeniedException.class)
+    public void updatePicture_Should_ThrowException_When_InsufficientPermissions() {
+        //Arrange
+        User toUpdate = new User("email2@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        toUpdate.setId(1L);
+
+        User author = new User("email3@email.com",
+                "password",
+                "Author",
+                "Peshov",
+                LocalDate.now());
+        author.setId(2L);
+
+        byte[] content = new byte[20];
+        new Random().nextBytes(content);
+
+        final String name = "picture.jpg";
+        final String type = "image/jpeg";
+        MockMultipartFile file = new MockMultipartFile(name, name, type,content);
+        Picture picture = new Picture(name, type, file.getSize(), name, toUpdate);
+
+        //Act
+        when(userRepository.findById(1L)).thenReturn(Optional.of(toUpdate));
+        when(pictureService.save(1L,1L, file)).thenReturn(picture);
+        userService.updatePicture(1L, author ,file);
+
+        //Assert
+        verify(userRepository, times(1)).save(toUpdate);
+    }
+
+    @Test
+    public void enrollCourse_Should_ReturnCourse_When_Successful() {
+        //Arrange
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        User student = new User("student@email.com",
+                "password",
+                "Student",
+                "Peshov",
+                LocalDate.now());
+        student.setId(2L);
+
+        Course course = new Course();
+        course.setId(1L);
+        course.setAuthor(author);
+
+        //Act
+        when(courseService.findByIdAndUser(1L, student)).thenReturn(course);
+        userService.enrollCourse(student, 1L);
+
+        //Assert
+        verify(courseRepository,times(1)).save(course);
+    }
+
+    @Test (expected = BadRequestException.class)
+    public void enrollCourse_Should_ThrowException_When_UserIsAlreadyEnrolled() {
+        //Arrange
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        User student = new User("student@email.com",
+                "password",
+                "Student",
+                "Peshov",
+                LocalDate.now());
+        student.setId(2L);
+
+        Course course = new Course();
+        course.setId(1L);
+        course.setAuthor(author);
+        course.getUsers().add(student);
+
+        //Act
+        when(courseService.findByIdAndUser(1L, student)).thenReturn(course);
+        userService.enrollCourse(student, 1L);
+
+        //Assert
+        verify(courseRepository,times(0)).save(course);
+    }
+
+    @Test (expected = BadRequestException.class)
+    public void enrollCourse_Should_ThrowException_When_UserIsTheAuthor() {
+        //Arrange
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        Course course = new Course();
+        course.setId(1L);
+        course.setAuthor(author);
+
+        //Act
+        when(courseService.findByIdAndUser(1L, author)).thenReturn(course);
+        userService.enrollCourse(author, 1L);
+
+        //Assert
+        verify(courseRepository,times(0)).save(course);
+    }
+
+    @Test (expected = BadRequestException.class)
+    public void enrollCourse_Should_ThrowException_When_UserHasFinishedTheCourse() {
+        //Arrange
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        User student = new User("student@email.com",
+                "password",
+                "Student",
+                "Peshov",
+                LocalDate.now());
+        student.setId(2L);
+
+        Course course = new Course();
+        course.setId(1L);
+        course.setAuthor(author);
+        student.getFinishedCourses().add(course);
+        //Act
+        when(courseService.findByIdAndUser(1L, student)).thenReturn(course);
+        userService.enrollCourse(student, 1L);
+
+        //Assert
+        verify(courseRepository,times(0)).save(course);
+    }
+
+    @Test
+    public void gradeAssignment_Should_SaveAssignment_When_Successful() {
+        //Arrange
+        Integer grade = 5;
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        User student = new User("student@email.com",
+                "password",
+                "Student",
+                "Peshov",
+                LocalDate.now());
+        student.setId(2L);
+
+        Lecture lecture = new Lecture();
+        lecture.setAuthor(author);
+        lecture.setName("Test Lecture");
+
+        Assignment assignment = new Assignment();
+        assignment.setLecture(lecture);
+
+        //Act
+        when(assignmentService.isLastAssignment(assignment)).thenReturn(false);
+        when(assignmentRepository.findById(assignment.getId())).thenReturn(Optional.of(assignment));
+        userService.gradeAssignment(assignment.getId(),grade, author);
+
+        //Assert
+        verify(assignmentRepository, times(1)).save(assignment);
+    }
+
+    @Test (expected = BadRequestException.class)
+    public void gradeAssignment_Should_ThrowException_When_UserIsNotAuthor() {
+        //Arrange
+        Integer grade = 5;
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        User student = new User("student@email.com",
+                "password",
+                "Student",
+                "Peshov",
+                LocalDate.now());
+        student.setId(2L);
+
+        Lecture lecture = new Lecture();
+        lecture.setAuthor(author);
+        lecture.setName("Test Lecture");
+
+        Assignment assignment = new Assignment();
+        assignment.setLecture(lecture);
+
+        //Act
+        when(assignmentService.isLastAssignment(assignment)).thenReturn(false);
+        when(assignmentRepository.findById(assignment.getId())).thenReturn(Optional.of(assignment));
+        userService.gradeAssignment(assignment.getId(),grade, student);
+
+        //Assert
+        verify(assignmentRepository, times(1)).save(assignment);
+    }
+
+    @Test (expected = BadRequestException.class)
+    public void gradeAssignment_Should_ThrowException_When_AssignmentAlreadyGraded() {
+        //Arrange
+        Integer grade = 5;
+        User author = new User("author@email.com",
+                "password",
+                "Pesho",
+                "Peshov",
+                LocalDate.now());
+        author.setId(1L);
+
+        User student = new User("student@email.com",
+                "password",
+                "Student",
+                "Peshov",
+                LocalDate.now());
+        student.setId(2L);
+
+        Lecture lecture = new Lecture();
+        lecture.setAuthor(author);
+        lecture.setName("Test Lecture");
+
+        Assignment assignment = new Assignment();
+        assignment.setLecture(lecture);
+        assignment.setGrade(5);
+
+        //Act
+        when(assignmentService.isLastAssignment(assignment)).thenReturn(false);
+        when(assignmentRepository.findById(assignment.getId())).thenReturn(Optional.of(assignment));
+        userService.gradeAssignment(assignment.getId(),grade, student);
+
+        //Assert
+        verify(assignmentRepository, times(1)).save(assignment);
     }
 
 }
