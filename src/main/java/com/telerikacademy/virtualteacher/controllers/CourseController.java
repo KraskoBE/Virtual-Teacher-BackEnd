@@ -102,4 +102,16 @@ public class CourseController {
                         CourseResponseDTO.class)
         );
     }
+
+    @PreAuthorize("hasRole('Student')")
+    @PutMapping("/rate_course")
+    public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
+                                     @RequestParam("rating") final Integer rating,
+                                     @CurrentUser final User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        courseService.rate(user, courseId, rating),
+                        CourseResponseDTO.class)
+        );
+    }
 }

@@ -102,7 +102,11 @@ public class CourseServiceImpl implements CourseService {
         if (rating < 1 || rating > 5) {
             throw new BadRequestException("Rating should be between 1 and 5");
         }
+
         Course course = findById(courseId);
+
+        if(!user.getFinishedCourses().contains(course))
+            throw new BadRequestException("You can not rate a course you haven't finished");
 
         if (courseRatingRepository.findByUserAndCourse(user, course).isPresent())
             throw new BadRequestException("You have already rated this course");

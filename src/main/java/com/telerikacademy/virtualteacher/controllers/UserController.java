@@ -1,7 +1,6 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.UserUpdateRequestDTO;
-import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
@@ -55,18 +54,6 @@ public class UserController {
                 modelMapper.map(
                         userService.findById(id),
                         UserResponseDTO.class)
-        );
-    }
-
-    @PreAuthorize("hasRole('Student')")
-    @PutMapping("/rate_course")
-    public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
-                                     @RequestParam("rating") final Integer rating,
-                                     @CurrentUser final User user) {
-        return ResponseEntity.ok().body(
-                modelMapper.map(
-                        courseService.rate(user, courseId, rating),
-                        CourseResponseDTO.class)
         );
     }
 
