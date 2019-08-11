@@ -1,7 +1,6 @@
 package com.telerikacademy.virtualteacher.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +8,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Getter
@@ -35,5 +35,18 @@ public class Task extends StorageFile {
     public Task(User author, Lecture lecture, String filePath, String fileType, Long fileSize, String fileName) {
         super(filePath, fileType, fileSize, fileName, author);
         this.lecture = lecture;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id.equals(task.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -1,11 +1,14 @@
 package com.telerikacademy.virtualteacher.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Getter
@@ -32,5 +35,18 @@ public class Video extends StorageFile {
     public Video(User author, Lecture lecture, String filePath, String fileType, Long fileSize, String fileName) {
         super(filePath, fileType, fileSize, fileName, author);
         this.lecture = lecture;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Video video = (Video) o;
+        return id.equals(video.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

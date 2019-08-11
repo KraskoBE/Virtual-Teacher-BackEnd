@@ -9,6 +9,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,5 +32,18 @@ public class Thumbnail extends StorageFile {
 
     public Thumbnail(@NotNull String filePath, @NotNull String fileType, @NotNull Long fileSize, @NotNull String fileName, User author) {
         super(filePath, fileType, fileSize, fileName, author);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Thumbnail thumbnail = (Thumbnail) o;
+        return id.equals(thumbnail.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
