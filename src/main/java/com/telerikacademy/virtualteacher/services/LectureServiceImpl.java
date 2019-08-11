@@ -101,7 +101,7 @@ public class LectureServiceImpl implements LectureService {
             return true;
 
         Lecture previousLecture = course.getLectures().stream()
-                .filter(lecture1 -> lecture.getInnerId().equals(lecture1.getInnerId() - 1))
+                .filter(lecture1 -> lecture1.getInnerId() == (lecture.getInnerId() - 1L))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Previous lecture not found"));
         return user.getFinishedLectures().contains(previousLecture);
