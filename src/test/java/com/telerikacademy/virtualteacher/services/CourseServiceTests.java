@@ -332,6 +332,7 @@ public class CourseServiceTests {
         User user = new User();
         Course course = new Course();
         course.setId(1L);
+        user.getFinishedCourses().add(course);
         Integer rating = 4;
         CourseRating courseRating = new CourseRating();
         courseRating.setRating(4);

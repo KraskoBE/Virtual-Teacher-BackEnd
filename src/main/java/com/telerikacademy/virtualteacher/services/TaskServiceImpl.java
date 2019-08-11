@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Service("TaskService")
 public class TaskServiceImpl extends StorageServiceBase implements TaskService {
@@ -57,16 +58,19 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
         String taskName = String.format("task_L%d.%s", lectureId, taskType);
         String taskUrl = storeFile(taskFile, lectureId, taskName);
 
-        return taskRepository.save(
-                new Task(
-                        author,
-                        lecture,
-                        taskUrl,
-                        taskFile.getContentType(),
-                        taskFile.getSize(),
-                        taskName
-                )
+        Task newTask = new Task(
+                author,
+                lecture,
+                taskUrl,
+                taskFile.getContentType(),
+                taskFile.getSize(),
+                taskName
         );
+
+        Optional<Task> optTask = taskRepository.findByFilePath(taskUrl);
+        optTask.ifPresent(task -> newTask.setId(task.getId()));
+
+        return taskRepository.save(newTask);
     }
 
     @Override

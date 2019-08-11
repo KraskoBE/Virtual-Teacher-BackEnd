@@ -35,35 +35,7 @@ public class ThumbnailServiceTests {
     @InjectMocks
     ThumbnailServiceImpl thumbnailService;
 
-    @Test
-    public void save_Should_Return_Thumbnail_When_FileExists() {
-        //Arrange
-        final Long authorId = 1L;
-        final Long courseId = 1L;
 
-        byte[] content = new byte[20];
-        new Random().nextBytes(content);
-        final String name = "picture.jpg";
-        final String type = "image/jpeg";
-        MockMultipartFile file = new MockMultipartFile(name, name, type,content);
-
-        User author = new User();
-        when(userService.findById(authorId)).thenReturn(author);
-
-        Course course = new Course();
-        when(courseService.findById(courseId)).thenReturn(course);
-
-        Thumbnail thumbnail = new Thumbnail();
-        Optional<Thumbnail> optional = Optional.of(thumbnail);
-
-        when(thumbnailRepository.findByFilePath(Mockito.isA(String.class))).thenReturn(optional);
-
-        //Act
-        Thumbnail result = thumbnailService.save(authorId, courseId, file);
-
-        //Assert
-        Assert.assertEquals(result, thumbnail);
-    }
 
     @Test
     public void save_Should_Return_Thumbnail_When_NewFileIsUploaded() {

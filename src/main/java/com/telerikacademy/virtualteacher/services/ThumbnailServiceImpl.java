@@ -51,20 +51,18 @@ public class ThumbnailServiceImpl extends StorageServiceBase implements Thumbnai
         String fileName = String.format("thumbnail_C%d.%s", courseId, fileType);
         String fileUrl = storeFile(thumbnailFile, courseId, fileName);
 
-        Optional<Thumbnail> thumbnail = thumbnailRepository.findByFilePath(fileUrl);
-        if (thumbnail.isPresent()) {
-            thumbnail.get().setAuthor(author);
-            return thumbnail.get();
-        }
+        Thumbnail newThumbnail = new Thumbnail(
+                fileUrl,
+                thumbnailFile.getContentType(),
+                thumbnailFile.getSize(),
+                fileName,
+                author
+        );
 
-        return thumbnailRepository.save(
-                new Thumbnail(
-                        fileUrl,
-                        thumbnailFile.getContentType(),
-                        thumbnailFile.getSize(),
-                        fileName,
-                        author
-                ));
+        Optional<Thumbnail> optThumbnail = thumbnailRepository.findByFilePath(fileUrl);
+        optThumbnail.ifPresent(thumbnail -> newThumbnail.setId(thumbnail.getId()));
+
+        return thumbnailRepository.save(newThumbnail);
     }
 
     @Override

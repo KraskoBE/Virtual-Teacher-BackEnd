@@ -5,6 +5,7 @@ import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 @AllArgsConstructor
 public class CourseController {
     private final CourseService courseService;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     @PreAuthorize("hasRole('Admin')")
@@ -56,6 +58,17 @@ public class CourseController {
         );
     }
 
+    @PreAuthorize("hasRole('Student')")
+    @PostMapping("/enroll")
+    public ResponseEntity enrollCourse(@RequestParam("courseId") final Long courseId,
+                                       @CurrentUser User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.enrollCourse(user, courseId),
+                        CourseResponseDTO.class)
+        );
+    }
+
     @GetMapping("/topic/{id}")
     public ResponseEntity findAllByTopicOrderedByAverageRating(@PathVariable(name = "id") Long topicId,
                                                                @PageableDefault Pageable pageable) {
@@ -86,6 +99,18 @@ public class CourseController {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         courseService.save(course, user),
+                        CourseResponseDTO.class)
+        );
+    }
+
+    @PreAuthorize("hasRole('Student')")
+    @PutMapping("/rate_course")
+    public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
+                                     @RequestParam("rating") final Integer rating,
+                                     @CurrentUser final User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        courseService.rate(user, courseId, rating),
                         CourseResponseDTO.class)
         );
     }

@@ -11,11 +11,11 @@ import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
-import org.springframework.expression.spel.ast.Assign;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Service("AssignmentService")
 public class AssignmentServiceImpl extends StorageServiceBase implements AssignmentService {
@@ -61,16 +61,19 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
         String fileName = String.format("assignment_L%d_U%d.%s", lectureId, authorId, fileType);
         String fileUrl = storeFile(assignmentFile, lectureId, fileName);
 
-        return assignmentRepository.save(
-                new Assignment(
-                        author,
-                        lecture,
-                        fileUrl,
-                        assignmentFile.getContentType(),
-                        assignmentFile.getSize(),
-                        fileName
-                )
+
+        Assignment newAssignment = new Assignment(
+                author,
+                lecture,
+                fileUrl,
+                assignmentFile.getContentType(),
+                assignmentFile.getSize(),
+                fileName
         );
+        Optional<Assignment> optAssignment = assignmentRepository.findByFilePath(fileUrl);
+        optAssignment.ifPresent(assignment -> newAssignment.setId(assignment.getId()));
+
+        return assignmentRepository.save(newAssignment);
     }
 
     @Override
@@ -79,7 +82,8 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
 
         User user = userService.findById(userId);
 
-        Assignment assignment = getAssignment(lecture, user);
+        Assignment assignment = assignmentRepository.findByLectureAndAuthor(lecture, user)
+                .orElseThrow(() -> new NotFoundException("Assignment not found"));
 
         String fileName = assignment.getFileName();
         return loadFileByName(fileName);
@@ -91,10 +95,5 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
         Long lectureInnerId = assignment.getLecture().getInnerId();
 
         return lectureInnerId == lectureSize;
-    }
-
-    private Assignment getAssignment(Lecture lecture, User user) {
-        return assignmentRepository.findByLectureAndUser(lecture, user)
-                .orElseThrow(() -> new NotFoundException("Assignment not found"));
     }
 }

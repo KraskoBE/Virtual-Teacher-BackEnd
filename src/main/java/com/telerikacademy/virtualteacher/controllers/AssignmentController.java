@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,7 @@ public class AssignmentController {
     private final AssignmentService assignmentService;
     private final UserService userService;
 
+    @PreAuthorize("hasRole('Student')")
     @PostMapping(consumes = {"multipart/form-data"})
     public Assignment save(@RequestParam("file") final MultipartFile file,
                            @RequestParam("lectureId") final Long lectureId,
@@ -28,6 +30,7 @@ public class AssignmentController {
         return assignmentService.save(user.getId(), lectureId, file);
     }
 
+    @PreAuthorize("hasRole('Student')")
     @GetMapping("/{lectureId}/{userId}")
     @ResponseBody
     public ResponseEntity<Resource> downloadFile(@PathVariable final Long lectureId,
@@ -37,7 +40,7 @@ public class AssignmentController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment: filename=\"" + resource.getFilename() +"\"")
+                        "attachment: filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 
@@ -45,6 +48,6 @@ public class AssignmentController {
     public ResponseEntity gradeAssignment(@PathVariable("id") Long assignmentId,
                                           @RequestParam("grade") Integer grade,
                                           @CurrentUser User user) {
-        return ResponseEntity.ok().body(userService.gradeAssignment(assignmentId,grade,user));
+        return ResponseEntity.ok().body(userService.gradeAssignment(assignmentId, grade, user));
     }
 }
