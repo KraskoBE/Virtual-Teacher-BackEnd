@@ -10,8 +10,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -52,7 +54,7 @@ public class Course {
 
     @JsonIgnore
     @OneToMany(mappedBy = "course")
-    private Set<Lecture> lectures = new HashSet<>();
+    private Set<Lecture> lectures = new TreeSet<>(Comparator.comparing(Lecture::getInnerId));
 
     @ManyToMany
     @JoinTable(name = "user_course",

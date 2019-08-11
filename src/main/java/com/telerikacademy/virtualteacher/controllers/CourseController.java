@@ -5,6 +5,7 @@ import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.contracts.CourseService;
+import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 @AllArgsConstructor
 public class CourseController {
     private final CourseService courseService;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     @PreAuthorize("hasRole('Admin')")
@@ -53,6 +55,17 @@ public class CourseController {
                                 course,
                                 CourseResponseDTO.class)
                         )
+        );
+    }
+
+    @PreAuthorize("hasRole('Student')")
+    @PostMapping("/enroll")
+    public ResponseEntity enrollCourse(@RequestParam("courseId") final Long courseId,
+                                       @CurrentUser User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.enrollCourse(user, courseId),
+                        CourseResponseDTO.class)
         );
     }
 

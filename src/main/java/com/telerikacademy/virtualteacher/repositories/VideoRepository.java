@@ -16,4 +16,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     void deleteById(@Param("videoId") Long id);
 
     Optional<Video> findByLecture(Lecture lecture);
+
+    Optional<Video> findByFilePath(String filePath);
 }

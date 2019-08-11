@@ -15,7 +15,7 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
     @Query("update Assignment a set a.enabled = false where a.id= :assignmentId")
     void deleteById(@Param("assignmentId") Long id);
 
-    default Optional<Assignment> findByLectureAndUser(Lecture lecture, User user) {
-        return null;
-    }
+    Optional<Assignment> findByFilePath(String filePath);
+
+    Optional<Assignment> findByLectureAndAuthor(Lecture lecture, User author);
 }

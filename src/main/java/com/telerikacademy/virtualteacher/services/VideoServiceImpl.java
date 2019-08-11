@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Service("VideoService")
 public class VideoServiceImpl extends StorageServiceBase implements VideoService {
@@ -55,16 +56,19 @@ public class VideoServiceImpl extends StorageServiceBase implements VideoService
         String fileName = String.format("video_L%d.%s", lectureId, fileType);
         String fileUrl = storeFile(videoFile, lectureId, fileName);
 
-        return videoRepository.save(
-                new Video(
-                        author,
-                        lecture,
-                        fileUrl,
-                        videoFile.getContentType(),
-                        videoFile.getSize(),
-                        fileName
-                )
+        Video newVideo = new Video(
+                author,
+                lecture,
+                fileUrl,
+                videoFile.getContentType(),
+                videoFile.getSize(),
+                fileName
         );
+
+        Optional<Video> optVideo = videoRepository.findByFilePath(fileUrl);
+        optVideo.ifPresent(video -> newVideo.setId(video.getId()));
+
+        return videoRepository.save(newVideo);
     }
 
     @Override

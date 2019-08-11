@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -22,6 +23,7 @@ import java.util.Set;
 @Where(clause = "enabled=1")
 @Table(name = "lectures")
 public class Lecture {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lecture_id")
@@ -70,4 +72,18 @@ public class Lecture {
     @Column(name = "enabled")
     @JsonIgnore
     private boolean enabled = true;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lecture lecture = (Lecture) o;
+        return id.equals(lecture.id) &&
+                innerId.equals(lecture.innerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, innerId);
+    }
 }

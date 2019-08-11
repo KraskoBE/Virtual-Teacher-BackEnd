@@ -15,4 +15,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     void deleteById(@Param("taskId") Long id);
 
     Optional<Task> findByLecture(Lecture lecture);
+
+    Optional<Task> findByFilePath(String filePath);
 }

@@ -62,21 +62,10 @@ public class UserController {
     @PutMapping("/rate_course")
     public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
                                      @RequestParam("rating") final Integer rating,
-                                     @CurrentUser User user) {
+                                     @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         courseService.rate(user, courseId, rating),
-                        CourseResponseDTO.class)
-        );
-    }
-
-    @PreAuthorize("hasRole('Student')")
-    @PostMapping("/enroll")
-    public ResponseEntity enrollCourse(@RequestParam("courseId") final Long courseId,
-                                       @CurrentUser User user) {
-        return ResponseEntity.ok().body(
-                modelMapper.map(
-                        userService.enrollCourse(user, courseId),
                         CourseResponseDTO.class)
         );
     }

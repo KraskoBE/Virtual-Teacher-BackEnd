@@ -45,20 +45,18 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
         String fileName = String.format("picture_U%d.%s", userId, fileType);
         String fileUrl = storeFile(pictureFile, userId, fileName);
 
-        Optional<Picture> picture = pictureRepository.findByFilePath(fileUrl);
-        if (picture.isPresent()) {
-            picture.get().setAuthor(author);
-            return picture.get();
-        }
+        Picture newPicture = new Picture(
+                fileUrl,
+                pictureFile.getContentType(),
+                pictureFile.getSize(),
+                fileName,
+                author
+        );
 
-        return pictureRepository.save(
-                new Picture(
-                        fileUrl,
-                        pictureFile.getContentType(),
-                        pictureFile.getSize(),
-                        fileName,
-                        author
-                ));
+        Optional<Picture> optPicture = pictureRepository.findByFilePath(fileUrl);
+        optPicture.ifPresent(picture -> newPicture.setId(picture.getId()));
+
+        return pictureRepository.save(newPicture);
     }
 
     @Override

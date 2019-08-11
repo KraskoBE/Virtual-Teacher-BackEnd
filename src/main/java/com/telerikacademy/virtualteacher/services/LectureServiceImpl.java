@@ -23,8 +23,6 @@ public class LectureServiceImpl implements LectureService {
     private final CourseService courseService;
     private final UserService userService;
 
-    //private final ModelMapper modelMapper;
-
     @Override
     public List<Lecture> findAll() {
         return lectureRepository.findAll();
@@ -59,7 +57,7 @@ public class LectureServiceImpl implements LectureService {
         return lecture;
     }
 
-    @Override // TODO do with modelMapper without breaking everything
+    @Override
     public Lecture save(LectureRequestDTO lectureRequestDTO, User author) {
         checkIfAlreadyExists(lectureRequestDTO.getName());
 
@@ -97,13 +95,16 @@ public class LectureServiceImpl implements LectureService {
     }
 
     private boolean hasUserFinishedPrevious(User user, Course course, Lecture lecture) {
+
         if (lecture.getInnerId() == 1)
             return true;
 
+
         Lecture previousLecture = course.getLectures().stream()
-                .filter(lecture1 -> lecture.getInnerId().equals(lecture1.getInnerId() - 1))
-                .findFirst()
+                .filter(lecture1 -> lecture1.getInnerId().equals(lecture.getInnerId()-1))
+                .findAny()
                 .orElseThrow(() -> new NotFoundException("Previous lecture not found"));
+
         return user.getFinishedLectures().contains(previousLecture);
     }
 
