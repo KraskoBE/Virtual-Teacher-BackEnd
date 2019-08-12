@@ -27,8 +27,7 @@ public class TaskController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable final Long id) {
-
+    public ResponseEntity findByCourseId(@PathVariable final Long id) {
         Resource resource = taskService.findByLectureId(id);
 
         return ResponseEntity.ok()
@@ -36,5 +35,4 @@ public class TaskController {
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
-
 }

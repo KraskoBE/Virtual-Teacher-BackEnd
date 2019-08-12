@@ -17,7 +17,7 @@ public class PictureController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable final Long id) {
+    public ResponseEntity findByUserId(@PathVariable final Long id) {
         Resource resource = pictureService.findByUserId(id);
 
         return ResponseEntity.ok()

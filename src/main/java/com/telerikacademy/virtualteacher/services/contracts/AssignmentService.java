@@ -10,6 +10,7 @@ public interface AssignmentService {
 
     Assignment save(Long authorId, Long lectureId, MultipartFile assignmentFile);
 
+
     Resource findByLectureIdAndUserId(Long lectureId, Long userId);
 
     boolean isLastAssignment(Assignment assignment);

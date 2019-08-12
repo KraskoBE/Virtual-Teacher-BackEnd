@@ -42,6 +42,5 @@ public class LectureController {
                         lectureService.save(lectureRequestDTO, user),
                         LectureResponseDTO.class)
         );
-
     }
 }

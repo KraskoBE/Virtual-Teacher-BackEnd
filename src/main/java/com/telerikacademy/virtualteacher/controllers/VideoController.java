@@ -26,7 +26,7 @@ public class VideoController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable final Long id) {
+    public ResponseEntity findByLectureId(@PathVariable final Long id) {
 
         Resource resource = videoService.findByLectureId(id);
 

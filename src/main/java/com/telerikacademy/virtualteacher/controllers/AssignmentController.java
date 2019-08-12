@@ -30,12 +30,18 @@ public class AssignmentController {
         return assignmentService.save(user.getId(), lectureId, file);
     }
 
+//    @PreAuthorize("hasRole('Student')")
+//    @GetMapping("/courseId")
+//    public ResponseEntity findAllByCourse(@PathVariable final Long courseId,
+//                                          @CurrentUser final User user) {
+//
+//    }
+
     @PreAuthorize("hasRole('Student')")
     @GetMapping("/{lectureId}/{userId}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable final Long lectureId,
-                                                 @PathVariable final Long userId) {
-
+    public ResponseEntity findByLectureAndUser(@PathVariable final Long lectureId,
+                                               @PathVariable final Long userId) {
         Resource resource = assignmentService.findByLectureIdAndUserId(lectureId, userId);
 
         return ResponseEntity.ok()

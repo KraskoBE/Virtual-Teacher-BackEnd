@@ -4,8 +4,6 @@ import com.telerikacademy.virtualteacher.dtos.request.UserUpdateRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.contracts.CourseService;
-import com.telerikacademy.virtualteacher.services.contracts.TeacherRequestService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,8 +22,6 @@ import java.util.stream.Collectors;
 public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;
-    private final CourseService courseService;
-    private final TeacherRequestService teacherRequestService;
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping
@@ -86,5 +82,4 @@ public class UserController {
     public void delete(@PathVariable final Long id) {
         userService.deleteById(id);
     }
-
 }
