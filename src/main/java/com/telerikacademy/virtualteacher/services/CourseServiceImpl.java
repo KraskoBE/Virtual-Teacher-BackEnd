@@ -78,8 +78,6 @@ public class CourseServiceImpl implements CourseService {
 
         Course courseToSave = modelMapper.map(course, Course.class);
 
-        System.out.println(courseToSave.toString());
-
         courseToSave.setAuthor(author);
         courseToSave.setTopic(findTopicById(course.getTopic()));
         courseToSave.setThumbnail(null);

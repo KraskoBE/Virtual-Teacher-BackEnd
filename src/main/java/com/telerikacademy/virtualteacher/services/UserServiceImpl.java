@@ -220,6 +220,6 @@ public class UserServiceImpl implements UserService {
 
     //---EOF interface methods
     private boolean isEmailAlreadyUsed(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository.findByEmailIgnoreCase(email).isPresent();
     }
 }
