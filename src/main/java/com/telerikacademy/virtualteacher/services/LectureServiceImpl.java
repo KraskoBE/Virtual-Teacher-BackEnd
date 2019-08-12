@@ -9,11 +9,12 @@ import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import com.telerikacademy.virtualteacher.services.contracts.*;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Lazy))
 @Service("LectureService")
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;

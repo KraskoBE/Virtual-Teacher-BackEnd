@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final AssignmentService assignmentService;
     private final CourseService courseService;
     private final NotificationService notificationService;
+    private final LectureService lectureService;
 
     @Override
     public List<User> findAll() {
@@ -116,11 +117,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Assignment findUserAssignmentByLecture(User user, Long lectureId) {
+        Lecture lecture = lectureService.findById(lectureId);
+
+        return user.getAssignments().stream()
+                .filter(assignment -> assignment.getLecture().equals(lecture))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Assignment not found"));
+    }
+
+    @Override
     public Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher) {
         Assignment assignment = getAssignment(assignmentId);
         Lecture lecture = assignment.getLecture();
         User student = assignment.getAuthor();
-
 
         if (!lecture.getAuthor().equals(teacher)) {
             throw new BadRequestException("You must be the lecture author to grade this!");
@@ -132,8 +142,10 @@ public class UserServiceImpl implements UserService {
 
         assignment.setGrade(grade);
 
+        lecture.getUsers().add(student);
+
         String lectureName = assignment.getLecture().getName();
-        String message = String.format("Your assignment for lecure %s has been graded with %d", lectureName, grade);
+        String message = String.format("Your assignment for lecture %s has been graded with %d", lectureName, grade);
         notificationService.sendNotification(assignment.getAuthor(), message);
 
         finishCourseIfLastAssignment(student, assignment);
@@ -144,11 +156,11 @@ public class UserServiceImpl implements UserService {
     private void finishCourseIfLastAssignment(User student, Assignment assignment) {
         Course course = assignment.getLecture().getCourse();
         if (assignmentService.isLastAssignment(assignment)) {
-            course.getUsers().remove(student);
             course.getGraduatedUsers().add(student);
             courseRepository.save(course);
+            String message = String.format("You have finished course: %s, you can now rate it", course.getName());
+            notificationService.sendNotification(student, message);
         }
-        //System.out.println(student.getFinishedCourses());
     }
 
     private Assignment getAssignment(Long id) {

@@ -1,12 +1,12 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 
-import com.telerikacademy.virtualteacher.models.Assignment;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.contracts.AssignmentService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +21,22 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @PreAuthorize("hasRole('Student')")
     @PostMapping(consumes = {"multipart/form-data"})
-    public Assignment save(@RequestParam("file") final MultipartFile file,
-                           @RequestParam("lectureId") final Long lectureId,
-                           @CurrentUser final User user) {
-        return assignmentService.save(user.getId(), lectureId, file);
+    public ResponseEntity save(@RequestParam("file") final MultipartFile file,
+                               @RequestParam("lectureId") final Long lectureId,
+                               @CurrentUser final User user) {
+        return ResponseEntity.ok().body(assignmentService.save(user.getId(), lectureId, file));
     }
 
-//    @PreAuthorize("hasRole('Student')")
-//    @GetMapping("/courseId")
-//    public ResponseEntity findAllByCourse(@PathVariable final Long courseId,
-//                                          @CurrentUser final User user) {
-//
-//    }
+    @PreAuthorize("hasRole('Student')")
+    @GetMapping
+    public ResponseEntity findByLecture(@RequestParam final Long lectureId,
+                                           @CurrentUser final User user) {
+        return ResponseEntity.ok().body(userService.findUserAssignmentByLecture(user, lectureId));
+    }
 
     @PreAuthorize("hasRole('Student')")
     @GetMapping("/{lectureId}/{userId}")
