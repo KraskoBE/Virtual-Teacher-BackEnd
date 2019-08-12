@@ -137,7 +137,7 @@ public class UserServiceTests {
                 userRequestDTO.getBirthDate());
 
         //Act
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(user.getEmail())).thenReturn(Optional.of(user));
 
         //Assert
         userService.save(userRequestDTO);

@@ -40,8 +40,8 @@ public class ThumbnailServiceTests {
     @Test
     public void save_Should_Return_Thumbnail_When_NewFileIsUploaded() {
         //Arrange
-        final Long authorId = 1L;
-        final Long courseId = 1L;
+        final Long authorId = 0L;
+        final Long courseId = 0L;
 
         byte[] content = new byte[20];
         new Random().nextBytes(content);
@@ -70,7 +70,7 @@ public class ThumbnailServiceTests {
     @Test (expected = NotFoundException.class)
     public void findCourseById_Should_ThrowException_When_PictureNotFound() {
         //Arrange
-        final Long courseId = 1L;
+        final Long courseId = 0L;
         Course course = new Course();
         when(courseService.findById(courseId)).thenReturn(course);
 
@@ -81,7 +81,7 @@ public class ThumbnailServiceTests {
     @Test
     public void findCourseById_Should_Return_Resource_When_Successful() {
         //Arrange
-        final Long courseId = 1L;
+        final Long courseId = 0L;
         final String fileName = "thumbnail.jpg";
         Course course = new Course();
         when(courseService.findById(courseId)).thenReturn(course);

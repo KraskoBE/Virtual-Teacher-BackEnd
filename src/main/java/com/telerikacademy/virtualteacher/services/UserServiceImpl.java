@@ -158,6 +158,7 @@ public class UserServiceImpl implements UserService {
         if (assignmentService.isLastAssignment(assignment)) {
             course.getGraduatedUsers().add(student);
             courseRepository.save(course);
+            course.getUsers().remove(student);
             String message = String.format("You have finished course: %s, you can now rate it", course.getName());
             notificationService.sendNotification(student, message);
         }

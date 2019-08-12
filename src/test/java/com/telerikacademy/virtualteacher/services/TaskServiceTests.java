@@ -2,11 +2,9 @@ package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.Lecture;
-import com.telerikacademy.virtualteacher.models.Picture;
 import com.telerikacademy.virtualteacher.models.Task;
 import com.telerikacademy.virtualteacher.repositories.TaskRepository;
 import com.telerikacademy.virtualteacher.services.contracts.LectureService;
-import com.telerikacademy.virtualteacher.services.contracts.TaskService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,8 +37,8 @@ public class TaskServiceTests {
     @Test
     public void save_Should_Return_Task_When_Successful() {
         //Arrange
-        final Long authorId = 1L;
-        final Long lectureId = 1L;
+        final Long authorId = 0L;
+        final Long lectureId = 0L;
 
         byte[] content = new byte[20];
         new Random().nextBytes(content);
@@ -62,7 +60,7 @@ public class TaskServiceTests {
     @Test (expected = NotFoundException.class)
     public void findByLectureId_Should_ThrowException_When_NotFound() {
         //Arrange
-        final Long lectureId = 1L;
+        final Long lectureId = 0L;
         Lecture lecture = new Lecture();
         lecture.setId(lectureId);
 
@@ -76,7 +74,7 @@ public class TaskServiceTests {
     public void findByLectureId_Should_Return_Resource_When_Successful() {
         //Arrange
         final String fileName = "FileName";
-        final Long lectureId = 1L;
+        final Long lectureId = 0L;
         Lecture lecture = new Lecture();
         lecture.setId(lectureId);
 

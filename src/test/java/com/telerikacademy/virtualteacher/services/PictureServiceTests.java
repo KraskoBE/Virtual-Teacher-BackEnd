@@ -35,7 +35,7 @@ public class PictureServiceTests {
     @Test (expected = StorageException.class)
     public void save_Should_ThrowException_When_FileIsEmpty() {
     //Arrange
-    final Long authorId = 1L;
+    final Long authorId = 0L;
     final Long userId = authorId;
     User author = new User();
     author.setId(authorId);
@@ -54,7 +54,7 @@ public class PictureServiceTests {
     @Test
     public void save_Should_Return_Picture_When_Successful() {
         //Arrange
-        final Long authorId = 1L;
+        final Long authorId = 0L;
         final Long userId = authorId;
         User author = new User();
         author.setId(authorId);
@@ -79,7 +79,7 @@ public class PictureServiceTests {
     @Test (expected = NotFoundException.class)
     public void findByUserId_Should_ThrowException_When_NotFound() {
         //Arrange
-        final Long userId = 1L;
+        final Long userId = 0L;
         User user = new User();
         user.setId(userId);
 
@@ -93,7 +93,7 @@ public class PictureServiceTests {
     @Test
     public void findByUserId_Should_Return_Resource_When_Successful() {
         //Arrange
-        final Long userId = 1L;
+        final Long userId = 0L;
         final String fileName = "Picture";
         User user = new User();
         user.setId(userId);

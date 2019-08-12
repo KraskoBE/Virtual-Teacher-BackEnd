@@ -34,6 +34,8 @@ public class CourseResponseDTO {
 
     private Set<User> users;
 
+    private Set<User> graduatedUsers;
+
     private double averageRating;
 
     private int totalVotes;

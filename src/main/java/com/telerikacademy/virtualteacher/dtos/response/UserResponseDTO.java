@@ -39,4 +39,7 @@ public class UserResponseDTO {
     private Set<Lecture> createdLectures;
 
     private Set<Lecture> finishedLectures;
+
+    private Set<Course> finishedCourses;
+
 }

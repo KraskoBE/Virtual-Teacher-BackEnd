@@ -38,8 +38,8 @@ public class VideoServiceTests {
     @Test
     public void save_Should_Return_Video_When_Successful() {
         //Arrange
-        final Long authorId = 1L;
-        final Long lecureId = 1L;
+        final Long authorId = 0L;
+        final Long lecureId = 0L;
 
         byte[] content = new byte[20];
         new Random().nextBytes(content);
@@ -65,7 +65,7 @@ public class VideoServiceTests {
     @Test (expected = NotFoundException.class)
     public void findByLectureId_Should_ThrowException_When_VideoIsNotFound(){
         //Arrange
-        final Long lectureId = 1L;
+        final Long lectureId = 0L;
         Lecture lecture = new Lecture();
 
         when(lectureService.findById(lectureId)).thenReturn(lecture);
@@ -78,7 +78,7 @@ public class VideoServiceTests {
     @Test
     public void findByLectureId_Should_Return_Resource_When_Successful(){
         //Arrange
-        final Long lectureId = 1L;
+        final Long lectureId = 0L;
         Lecture lecture = new Lecture();
         Video video = new Video();
         Resource resource = null;

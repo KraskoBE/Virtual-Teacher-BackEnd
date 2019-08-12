@@ -39,7 +39,7 @@ public class AssignmentServiceTests {
     @Test (expected = NotFoundException.class)
     public void findById_Should_ThrowException_When_NotFound() {
         //Arrange
-        final Long id = 1L;
+        final Long id = 0L;
 
         when(assignmentRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -50,7 +50,7 @@ public class AssignmentServiceTests {
     @Test
     public void findById_Should_Return_Assignment_When_Successful() {
         //Arrange
-        final Long id = 1L;
+        final Long id = 0L;
         Assignment assignment = new Assignment();
         when(assignmentRepository.findById(id)).thenReturn(Optional.of(assignment));
 
@@ -64,8 +64,8 @@ public class AssignmentServiceTests {
     @Test
     public void save_Should_Return_Assignment_When_Successful() {
         //Arrange
-        final Long authorId = 1L;
-        final Long lectureId = 1L;
+        final Long authorId = 0L;
+        final Long lectureId = 0L;
         byte[] content = new byte[20];
         new Random().nextBytes(content);
 
@@ -92,8 +92,8 @@ public class AssignmentServiceTests {
     @Test (expected = NotFoundException.class)
     public void findByLectureIdAndUser_Should_ThrowException_When_NotFound() {
         //Arrange
-        final Long lectureId = 1L;
-        final Long userId = 1L;
+        final Long lectureId = 0L;
+        final Long userId = 0L;
 
         Lecture lecture = new Lecture();
         when(lectureService.findById(lectureId)).thenReturn(lecture);
@@ -111,8 +111,8 @@ public class AssignmentServiceTests {
     @Test
     public void findByLectureIdAndUser_Should_Return_Resource_When_Successful() {
         //Arrange
-        final Long lectureId = 1L;
-        final Long userId = 1L;
+        final Long lectureId = 0L;
+        final Long userId = 0L;
 
         final String fileName = "assignment.txt";
         Lecture lecture = new Lecture();
@@ -138,7 +138,7 @@ public class AssignmentServiceTests {
     @Test
     public void isLastAssignment_Should_Return_True_When_IsLastAssignment() {
         //Arrange
-        final Long lectureInnerId = 1L;
+        final Long lectureInnerId = 0L;
 
         Course course = new Course();
         Lecture lecture = new Lecture();
@@ -158,7 +158,7 @@ public class AssignmentServiceTests {
     @Test
     public void isLastAssignment_Should_Return_False_When_IsNotLastAssignment() {
         //Arrange
-        final Long lectureInnerId = 1L;
+        final Long lectureInnerId =0L;
 
         Course course = new Course();
         Lecture lecture = new Lecture();
