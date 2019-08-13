@@ -94,6 +94,9 @@ public class CourseServiceImpl implements CourseService {
     public Course submit(Long courseId, User user) {
         Course course = findById(courseId);
 
+        if(course.getLectures().size()==0)
+            throw new BadRequestException("Add lectures before saving the course");
+
         if(course.getAuthor().equals(user))
             course.setSubmitted(true);
 
