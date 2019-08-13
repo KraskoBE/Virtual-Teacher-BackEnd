@@ -22,6 +22,8 @@ public interface CourseService {
 
     Course save(CourseRequestDTO course, User author);
 
+    Course submit(Long courseId, User user);
+
     //Course update(Long id, Course course);
 
     void deleteById(Long courseId);

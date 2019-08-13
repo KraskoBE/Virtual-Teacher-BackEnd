@@ -91,6 +91,16 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public Course submit(Long courseId, User user) {
+        Course course = findById(courseId);
+
+        if(course.getAuthor().equals(user))
+            course.setSubmitted(true);
+
+        return courseRepository.save(course);
+    }
+
+    @Override
     public void deleteById(Long courseId) {
 
     }
