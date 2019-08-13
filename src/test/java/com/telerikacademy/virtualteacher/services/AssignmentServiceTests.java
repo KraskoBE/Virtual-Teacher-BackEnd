@@ -138,7 +138,7 @@ public class AssignmentServiceTests {
     @Test
     public void isLastAssignment_Should_Return_True_When_IsLastAssignment() {
         //Arrange
-        final Long lectureInnerId = 0L;
+        final Long lectureInnerId = 1L;
 
         Course course = new Course();
         Lecture lecture = new Lecture();
