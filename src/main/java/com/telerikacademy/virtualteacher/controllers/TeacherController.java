@@ -29,6 +29,14 @@ public class TeacherController {
     }
 
     @PreAuthorize("hasRole('Admin')")
+    @GetMapping
+    public ResponseEntity getTeacherRequests() {
+        return ResponseEntity.ok().body(
+                teacherRequestService.findAll()
+        );
+    }
+
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping("/{userId}")
     public ResponseEntity accept(@PathVariable(name = "userId") final Long userId) {
 

@@ -40,6 +40,7 @@ public class VideoServiceTests {
         //Arrange
         final Long authorId = 1L;
         final Long lecureId = 1L;
+        final Long videoId = 0L;
 
         byte[] content = new byte[20];
         new Random().nextBytes(content);
@@ -50,9 +51,11 @@ public class VideoServiceTests {
         User author = new User();
         Lecture lecture = new Lecture();
         Video video = new Video();
+        video.setId(videoId);
 
         when(userService.findById(authorId)).thenReturn(author);
         when(lectureService.findById(lecureId)).thenReturn(lecture);
+        //when(videoRepository.findByFilePath(Mockito.anyString())).thenReturn(Optional.of(video));
         when(videoRepository.save(Mockito.isA(Video.class))).thenReturn(video);
 
         //Act

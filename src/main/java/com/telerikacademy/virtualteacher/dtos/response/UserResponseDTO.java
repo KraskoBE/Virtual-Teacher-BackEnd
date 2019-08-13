@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.Lecture;
 import com.telerikacademy.virtualteacher.models.Picture;
+import com.telerikacademy.virtualteacher.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +40,6 @@ public class UserResponseDTO {
     private Set<Lecture> createdLectures;
 
     private Set<Lecture> finishedLectures;
+
+    private Set<Role> roles;
 }
