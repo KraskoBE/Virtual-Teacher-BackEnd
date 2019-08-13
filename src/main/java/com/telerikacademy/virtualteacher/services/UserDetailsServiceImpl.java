@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private User findByEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }

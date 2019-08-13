@@ -36,8 +36,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('Student')")
     @PostMapping("/validate")
-    public ResponseEntity validate(@CurrentUser User currentUser)
-    {
+    public ResponseEntity validate(@CurrentUser User currentUser) {
         return ResponseEntity.ok().body(authService.validateToken(currentUser));
     }
 }

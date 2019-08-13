@@ -28,6 +28,8 @@ public interface UserService {
 
     Course enrollCourse(User user, Long courseId);
 
+    Assignment findUserAssignmentByLecture(User user, Long lectureId);
+
     Assignment gradeAssignment(Long assignmentId, Integer grade, User teacher);
 
     User setRole(Long userId, Role.Name roleName);

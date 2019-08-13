@@ -4,13 +4,13 @@ import com.telerikacademy.virtualteacher.dtos.request.UserUpdateRequestDTO;
 import com.telerikacademy.virtualteacher.dtos.response.UserResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
-import com.telerikacademy.virtualteacher.services.contracts.CourseService;
-import com.telerikacademy.virtualteacher.services.contracts.TeacherRequestService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
+import com.telerikacademy.virtualteacher.validators.PasswordConstraint;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;
-    private final CourseService courseService;
-    private final TeacherRequestService teacherRequestService;
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping
@@ -70,6 +68,20 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('Student')")
+    @PutMapping("/{id}/updatePassword")
+    @Validated
+    public ResponseEntity updatePassword(@PathVariable(name = "id") final Long userId,
+                                         @CurrentUser final User currentUser,
+                                         @RequestParam @PasswordConstraint String newPassword) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        userService.updatePassword(userId, newPassword, currentUser),
+                        UserResponseDTO.class
+                )
+        );
+    }
+
+    @PreAuthorize("hasRole('Student')")
     @PutMapping("/{id}/updatePicture")
     public ResponseEntity changePicture(@PathVariable(name = "id") final Long userId,
                                         @CurrentUser final User user,
@@ -86,5 +98,4 @@ public class UserController {
     public void delete(@PathVariable final Long id) {
         userService.deleteById(id);
     }
-
 }

@@ -78,8 +78,6 @@ public class CourseServiceImpl implements CourseService {
 
         Course courseToSave = modelMapper.map(course, Course.class);
 
-        System.out.println(courseToSave.toString());
-
         courseToSave.setAuthor(author);
         courseToSave.setTopic(findTopicById(course.getTopic()));
         courseToSave.setThumbnail(null);
@@ -90,6 +88,19 @@ public class CourseServiceImpl implements CourseService {
         courseToSave.setThumbnail(thumbnail);
 
         return courseRepository.save(courseToSave);
+    }
+
+    @Override
+    public Course submit(Long courseId, User user) {
+        Course course = findById(courseId);
+
+        if(course.getLectures().size()==0)
+            throw new BadRequestException("Add lectures before saving the course");
+
+        if(course.getAuthor().equals(user))
+            course.setSubmitted(true);
+
+        return courseRepository.save(course);
     }
 
     @Override

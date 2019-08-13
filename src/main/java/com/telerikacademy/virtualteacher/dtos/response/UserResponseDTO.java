@@ -42,4 +42,7 @@ public class UserResponseDTO {
     private Set<Lecture> finishedLectures;
 
     private Set<Role> roles;
+
+    private Set<Course> finishedCourses;
+
 }

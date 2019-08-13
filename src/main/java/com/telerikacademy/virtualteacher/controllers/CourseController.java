@@ -103,6 +103,17 @@ public class CourseController {
         );
     }
 
+    @PreAuthorize("hasRole('Teacher')")
+    @PutMapping("/{courseId}/submit")
+    public ResponseEntity submitCourse(@PathVariable Long courseId,
+                                       @CurrentUser User user) {
+        return ResponseEntity.ok().body(
+                modelMapper.map(
+                        courseService.submit(courseId, user),
+                        CourseResponseDTO.class)
+        );
+    }
+
     @PreAuthorize("hasRole('Student')")
     @PutMapping("/rate_course")
     public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,

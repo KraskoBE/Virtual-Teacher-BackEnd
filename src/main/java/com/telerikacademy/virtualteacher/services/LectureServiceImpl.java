@@ -9,11 +9,12 @@ import com.telerikacademy.virtualteacher.models.*;
 import com.telerikacademy.virtualteacher.repositories.LectureRepository;
 import com.telerikacademy.virtualteacher.services.contracts.*;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Lazy))
 @Service("LectureService")
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;
@@ -48,7 +49,7 @@ public class LectureServiceImpl implements LectureService {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Lecture not found"));
 
-        if (!isUserEnrolled(user, course) && !userService.hasRole(user, Role.Name.Admin))
+        if (!isUserEnrolled(user, course) && !userService.hasRole(user, Role.Name.Admin) && !hasUserFinished(user,course))
             throw new AccessDeniedException("You are not enrolled for this course");
 
         if (!hasUserFinishedPrevious(user, course, lecture) && !userService.hasRole(user, Role.Name.Admin))
@@ -92,6 +93,11 @@ public class LectureServiceImpl implements LectureService {
 
     private boolean isUserEnrolled(User user, Course course) {
         return course.getUsers().contains(user);
+    }
+
+    private boolean hasUserFinished(User user, Course course)
+    {
+        return course.getGraduatedUsers().contains(user);
     }
 
     private boolean hasUserFinishedPrevious(User user, Course course, Lecture lecture) {

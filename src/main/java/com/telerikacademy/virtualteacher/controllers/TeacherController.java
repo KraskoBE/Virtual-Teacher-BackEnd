@@ -50,10 +50,8 @@ public class TeacherController {
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/{userId}")
     public void deny(@PathVariable(name = "userId") final Long userId) {
-
         notificationService.sendNotification(userService.findById(userId), "Your teacher request has been denied");
 
         teacherRequestService.deleteByUserId(userId);
     }
-
 }

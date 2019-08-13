@@ -1,7 +1,6 @@
 package com.telerikacademy.virtualteacher.services;
 
 import com.telerikacademy.virtualteacher.exceptions.auth.UserNotFoundException;
-import com.telerikacademy.virtualteacher.exceptions.global.NotFoundException;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.repositories.UserRepository;
 import org.junit.Assert;
@@ -31,7 +30,7 @@ public class UserDetailsTests {
         final String username = "username@abv.bg";
         User user = new User();
 
-        when(userRepository.findByEmail(username)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(username)).thenReturn(Optional.empty());
 
         //Act & Assert
         userDetailsService.loadUserByUsername(username);
@@ -43,7 +42,7 @@ public class UserDetailsTests {
         final String username = "username@abv.bg";
         User user = new User();
 
-        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(username)).thenReturn(Optional.of(user));
 
         //Act
         UserDetails result = userDetailsService.loadUserByUsername(username);

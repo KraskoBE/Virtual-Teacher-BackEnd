@@ -16,7 +16,7 @@ public class ThumbnailController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFile(@PathVariable(name = "id") final Long courseId) {
+    public ResponseEntity findByCourseId(@PathVariable(name = "id") final Long courseId) {
         Resource resource = thumbnailService.findByCourseId(courseId);
 
         return ResponseEntity.ok()
