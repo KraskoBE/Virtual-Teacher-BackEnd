@@ -36,6 +36,13 @@ public class CourseController {
         );
     }
 
+    @GetMapping("/search")
+    public ResponseEntity searchForOne(@RequestParam("searchField") String searchField){
+        return ResponseEntity.ok().body(
+                courseService.searchName(searchField)
+        );
+    }
+
     @GetMapping("/recent")
     public ResponseEntity findAllOrderedById(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok().body(

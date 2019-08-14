@@ -15,9 +15,13 @@ import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @AllArgsConstructor(onConstructor = @__(@Lazy))
@@ -34,6 +38,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<Course> findAll(Pageable pageable) {
         return courseRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Course> searchName(String name) {
+        return courseRepository.findByNameContainingIgnoreCaseAndSubmittedIsTrue(name);
     }
 
     @Override
