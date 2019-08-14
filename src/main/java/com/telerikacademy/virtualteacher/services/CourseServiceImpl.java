@@ -15,13 +15,9 @@ import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 
 @AllArgsConstructor(onConstructor = @__(@Lazy))
@@ -41,8 +37,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> searchName(String name) {
-        return courseRepository.findByNameContainingIgnoreCaseAndSubmittedIsTrue(name);
+    public Page<Course> findByName(String name, Pageable pageable) {
+        return courseRepository.findByNameContainingIgnoreCaseAndSubmittedIsTrue(name, pageable);
     }
 
     @Override
@@ -103,10 +99,10 @@ public class CourseServiceImpl implements CourseService {
     public Course submit(Long courseId, User user) {
         Course course = findById(courseId);
 
-        if(course.getLectures().size()==0)
+        if (course.getLectures().size() == 0)
             throw new BadRequestException("Add lectures before saving the course");
 
-        if(course.getAuthor().equals(user))
+        if (course.getAuthor().equals(user))
             course.setSubmitted(true);
 
         return courseRepository.save(course);
@@ -125,7 +121,7 @@ public class CourseServiceImpl implements CourseService {
 
         Course course = findById(courseId);
 
-        if(!user.getFinishedCourses().contains(course))
+        if (!user.getFinishedCourses().contains(course))
             throw new BadRequestException("You can not rate a course you haven't finished");
 
         if (courseRatingRepository.findByUserAndCourse(user, course).isPresent())
@@ -140,6 +136,14 @@ public class CourseServiceImpl implements CourseService {
 
         course.setTotalVotes(course.getCourseRatings().size());
         return courseRepository.save(course);
+    }
+
+    @Override
+    public CourseRating findUserRating(User user, Long courseId) {
+        Course course = findById(courseId);
+
+        return courseRatingRepository.findByUserAndCourse(user, course)
+                .orElseThrow(() -> new NotFoundException("Rating not found"));
     }
 
 

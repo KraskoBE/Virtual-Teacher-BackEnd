@@ -2,12 +2,10 @@ package com.telerikacademy.virtualteacher.repositories;
 
 import com.telerikacademy.virtualteacher.models.Course;
 import com.telerikacademy.virtualteacher.models.Topic;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
@@ -15,7 +13,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Page<Course> findAll(Pageable page);
 
-    List<Course> findByNameContainingIgnoreCaseAndSubmittedIsTrue(String name);
+    Page<Course> findByNameContainingIgnoreCaseAndSubmittedIsTrue(String name, Pageable pageable);
 
     Page<Course> findBySubmittedTrueOrderByIdDesc(Pageable pageable);
 

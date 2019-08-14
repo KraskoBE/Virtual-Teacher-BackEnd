@@ -97,7 +97,6 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
     }
 
-
     @Override
     public Course enrollCourse(User user, Long courseId) {
         Course course = courseService.findByIdAndUser(courseId, user);
@@ -186,7 +185,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User setRole(Long userId, Role.Name roleName) {
         User user = findById(userId);
-
 
         Collection<Role> newRoles = new HashSet<>();
 

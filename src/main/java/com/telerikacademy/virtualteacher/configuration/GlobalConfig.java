@@ -1,7 +1,10 @@
 package com.telerikacademy.virtualteacher.configuration;
 
 
+import com.telerikacademy.virtualteacher.dtos.response.CourseRatingResponseDTO;
+import com.telerikacademy.virtualteacher.models.CourseRating;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +42,7 @@ public class GlobalConfig {
 
     @Bean
     public DataSource dataSource() {
-        return  DataSourceBuilder.create()
+        return DataSourceBuilder.create()
                 .username(dbUsername)
                 .password(dbPassword)
                 .url(dbUrl)
@@ -70,6 +73,17 @@ public class GlobalConfig {
 
     @Bean
     public ModelMapper modelMapper() {
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+
+        modelMapper.addMappings(new PropertyMap<CourseRating, CourseRatingResponseDTO>() {
+            @Override
+            protected void configure() {
+                map().setUser(source.getUser().getId());
+                map().setCourse(source.getCourse().getId());
+                map().setRating(source.getRating());
+            }
+        });
+
+        return modelMapper;
     }
 }

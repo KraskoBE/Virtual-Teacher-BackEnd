@@ -1,6 +1,7 @@
 package com.telerikacademy.virtualteacher.controllers;
 
 import com.telerikacademy.virtualteacher.dtos.request.CourseRequestDTO;
+import com.telerikacademy.virtualteacher.dtos.response.CourseRatingResponseDTO;
 import com.telerikacademy.virtualteacher.dtos.response.CourseResponseDTO;
 import com.telerikacademy.virtualteacher.models.User;
 import com.telerikacademy.virtualteacher.security.CurrentUser;
@@ -26,7 +27,7 @@ public class CourseController {
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping
-    public ResponseEntity findAll(@PageableDefault Pageable pageable) {
+    public ResponseEntity findAll(@PageableDefault final Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findAll(pageable)
                         .map(course -> modelMapper.map(
@@ -37,14 +38,15 @@ public class CourseController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity searchForOne(@RequestParam("searchField") String searchField){
+    public ResponseEntity searchForOne(@RequestParam("q") final String query,
+                                       @PageableDefault final Pageable pageable){
         return ResponseEntity.ok().body(
-                courseService.searchName(searchField)
+                courseService.findByName(query, pageable)
         );
     }
 
     @GetMapping("/recent")
-    public ResponseEntity findAllOrderedById(@PageableDefault Pageable pageable) {
+    public ResponseEntity findAllOrderedById(@PageableDefault final Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findAllOrderedByIdDesc(pageable)
                         .map(course -> modelMapper.map(
@@ -122,14 +124,24 @@ public class CourseController {
     }
 
     @PreAuthorize("hasRole('Student')")
-    @PutMapping("/rate_course")
-    public ResponseEntity rateCourse(@RequestParam("course_id") final Long courseId,
+    @PutMapping("/rate-course")
+    public ResponseEntity rateCourse(@RequestParam("course-id") final Long courseId,
                                      @RequestParam("rating") final Integer rating,
                                      @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         courseService.rate(user, courseId, rating),
                         CourseResponseDTO.class)
+        );
+    }
+
+    @PreAuthorize("hasRole('Student')")
+    @GetMapping("/my-rating")
+    public ResponseEntity myRating(@RequestParam("course-id") final Long courseId,
+                                   @CurrentUser final User user) {
+        return ResponseEntity.ok().body(modelMapper.map(
+                courseService.findUserRating(user, courseId),
+                CourseRatingResponseDTO.class)
         );
     }
 }

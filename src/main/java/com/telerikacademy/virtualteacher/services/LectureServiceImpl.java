@@ -105,7 +105,6 @@ public class LectureServiceImpl implements LectureService {
         if (lecture.getInnerId() == 1)
             return true;
 
-
         Lecture previousLecture = course.getLectures().stream()
                 .filter(lecture1 -> lecture1.getInnerId() == (lecture.getInnerId() - 1L))
                 .findFirst()
