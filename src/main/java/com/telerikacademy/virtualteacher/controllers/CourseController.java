@@ -39,7 +39,7 @@ public class CourseController {
 
     @GetMapping("/search")
     public ResponseEntity searchForOne(@RequestParam("q") final String query,
-                                       @PageableDefault final Pageable pageable){
+                                       @PageableDefault final Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findByName(query, pageable)
         );
@@ -57,7 +57,7 @@ public class CourseController {
     }
 
     @GetMapping("/top")
-    public ResponseEntity findAllOrderedByAverageRating(@PageableDefault Pageable pageable) {
+    public ResponseEntity findAllOrderedByAverageRating(@PageableDefault final Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findAllByOrderedByAverageRating(pageable)
                         .map(course -> modelMapper.map(
@@ -79,8 +79,8 @@ public class CourseController {
     }
 
     @GetMapping("/topic/{id}")
-    public ResponseEntity findAllByTopicOrderedByAverageRating(@PathVariable(name = "id") Long topicId,
-                                                               @PageableDefault Pageable pageable) {
+    public ResponseEntity findAllByTopicOrderedByAverageRating(@PathVariable(name = "id") final Long topicId,
+                                                               @PageableDefault final Pageable pageable) {
         return ResponseEntity.ok().body(
                 courseService.findAllByTopicOrderedByAverageRatingDesc(topicId, pageable)
                         .map(course -> modelMapper.map(
@@ -114,8 +114,8 @@ public class CourseController {
 
     @PreAuthorize("hasRole('Teacher')")
     @PutMapping("/{courseId}/submit")
-    public ResponseEntity submitCourse(@PathVariable Long courseId,
-                                       @CurrentUser User user) {
+    public ResponseEntity submitCourse(@PathVariable final Long courseId,
+                                       @CurrentUser final User user) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         courseService.submit(courseId, user),

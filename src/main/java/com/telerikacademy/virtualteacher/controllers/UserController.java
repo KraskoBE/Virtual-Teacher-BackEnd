@@ -72,7 +72,7 @@ public class UserController {
     @Validated
     public ResponseEntity updatePassword(@PathVariable(name = "id") final Long userId,
                                          @CurrentUser final User currentUser,
-                                         @RequestParam @PasswordConstraint String newPassword) {
+                                         @RequestParam @PasswordConstraint final String newPassword) {
         return ResponseEntity.ok().body(
                 modelMapper.map(
                         userService.updatePassword(userId, newPassword, currentUser),

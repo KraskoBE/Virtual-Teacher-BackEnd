@@ -19,8 +19,8 @@ public class AdminController {
     private final UserService userService;
 
     @PutMapping("/role")
-    public ResponseEntity setRole(@RequestParam("userId") Long userId,
-                                  @RequestParam("roleName") Role.Name role) {
+    public ResponseEntity setRole(@RequestParam("userId") final Long userId,
+                                  @RequestParam("roleName") final Role.Name role) {
         return ResponseEntity.ok().body(userService.setRole(userId, role));
     }
 }

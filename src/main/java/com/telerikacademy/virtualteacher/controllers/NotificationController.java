@@ -19,19 +19,19 @@ public class NotificationController {
     private final UserService userService;
 
     @GetMapping("/unseen")
-    public ResponseEntity getUserUnseenNotifications(@CurrentUser User user) {
+    public ResponseEntity getUserUnseenNotifications(@CurrentUser final User user) {
         return ResponseEntity.ok().body(notificationService.getUserUnseenNotifications(user));
     }
 
     @PutMapping("/see/{id}")
-    public ResponseEntity seeNotification(@PathVariable("id") Long id) {
+    public ResponseEntity seeNotification(@PathVariable("id") final Long id) {
         return ResponseEntity.ok().body(notificationService.markAsSeen(id));
     }
 
     @PreAuthorize("hasRole('Admin')")
     @PostMapping("/send")
-    public ResponseEntity sendNotification(@RequestParam("receiverId") Long receiverId,
-                                           @RequestParam("message") String message) {
+    public ResponseEntity sendNotification(@RequestParam("receiverId") final Long receiverId,
+                                           @RequestParam("message") final String message) {
         return ResponseEntity.ok().body(notificationService.sendNotification(userService.findById(receiverId), message));
     }
 }
