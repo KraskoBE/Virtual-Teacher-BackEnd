@@ -6,7 +6,6 @@ import com.telerikacademy.virtualteacher.security.CurrentUser;
 import com.telerikacademy.virtualteacher.services.contracts.AssignmentService;
 import com.telerikacademy.virtualteacher.services.contracts.UserService;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
     private final UserService userService;
-    private final ModelMapper modelMapper;
 
     @PreAuthorize("hasRole('Student')")
     @PostMapping(consumes = {"multipart/form-data"})
@@ -34,16 +32,14 @@ public class AssignmentController {
     @PreAuthorize("hasRole('Student')")
     @GetMapping
     public ResponseEntity findByLecture(@RequestParam final Long lectureId,
-                                           @CurrentUser final User user) {
+                                        @CurrentUser final User user) {
         return ResponseEntity.ok().body(userService.findUserAssignmentByLecture(user, lectureId));
     }
 
-    @PreAuthorize("hasRole('Student')")
-    @GetMapping("/{lectureId}/{userId}")
+    @GetMapping("/{name}")
     @ResponseBody
-    public ResponseEntity findByLectureAndUser(@PathVariable final Long lectureId,
-                                               @PathVariable final Long userId) {
-        Resource resource = assignmentService.findByLectureIdAndUserId(lectureId, userId);
+    public ResponseEntity findByName(@PathVariable final String name) {
+        Resource resource = assignmentService.findByFileName(name);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -51,10 +47,17 @@ public class AssignmentController {
                 .body(resource);
     }
 
+    @PreAuthorize("hasRole('Teacher')")
+    @GetMapping("/{authorId}/teacher")
+    public ResponseEntity findAllByLecture(@PathVariable final Long authorId) {
+        return ResponseEntity.ok().body(assignmentService.findByCourseAuthor(authorId, 0));
+    }
+
+
     @PutMapping("/{id}/grade")
-    public ResponseEntity gradeAssignment(@PathVariable("id") Long assignmentId,
-                                          @RequestParam("grade") Integer grade,
-                                          @CurrentUser User user) {
+    public ResponseEntity gradeAssignment(@PathVariable("id") final Long assignmentId,
+                                          @RequestParam("grade") final Integer grade,
+                                          @CurrentUser final User user) {
         return ResponseEntity.ok().body(userService.gradeAssignment(assignmentId, grade, user));
     }
 }

@@ -56,7 +56,7 @@ public class TaskServiceImpl extends StorageServiceBase implements TaskService {
 
         String taskType = allowedTypes.get(taskFile.getContentType());
         String taskName = String.format("task_L%d.%s", lectureId, taskType);
-        String taskUrl = storeFile(taskFile, lectureId, taskName);
+        String taskUrl = storeFile(taskFile, lectureId.toString(), taskName);
 
         Task newTask = new Task(
                 author,

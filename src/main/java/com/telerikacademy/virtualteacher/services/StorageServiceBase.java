@@ -3,7 +3,6 @@ package com.telerikacademy.virtualteacher.services;
 import com.telerikacademy.virtualteacher.exceptions.global.BadRequestException;
 import com.telerikacademy.virtualteacher.exceptions.storage.FileNotFoundException;
 import com.telerikacademy.virtualteacher.exceptions.storage.StorageException;
-import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +39,7 @@ public abstract class StorageServiceBase {
         }
     }
 
-    final String storeFile(MultipartFile file, Long fileId, String fileName) {
+    final String storeFile(MultipartFile file, String fileId, String fileName) {
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file ");
@@ -55,7 +54,7 @@ public abstract class StorageServiceBase {
         } catch (IOException e) {
             throw new StorageException("Failed to store file ", e);
         }
-        return String.format("%s/%d", this.rootUrl, fileId);
+        return String.format("%s/%s", this.rootUrl, fileId);
     }
 
     private void checkFileType(MultipartFile file) {

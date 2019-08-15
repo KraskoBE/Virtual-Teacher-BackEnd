@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 @Service("AssignmentService")
@@ -59,8 +60,7 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
 
         String fileType = allowedTypes.get(assignmentFile.getContentType());
         String fileName = String.format("assignment_L%d_U%d.%s", lectureId, authorId, fileType);
-        String fileUrl = storeFile(assignmentFile, lectureId, fileName);
-
+        String fileUrl = storeFile(assignmentFile, fileName, fileName);
 
         Assignment newAssignment = new Assignment(
                 author,
@@ -77,15 +77,16 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
     }
 
     @Override
-    public Resource findByLectureIdAndUserId(Long lectureId, Long userId) {
-        Lecture lecture = lectureService.findById(lectureId);
+    public List<Assignment> findByCourseAuthor(Long courseAuthorId, int minimalGrade) {
+        return assignmentRepository.findByLecture_Course_Author_IdAndGradeEquals(courseAuthorId, 0);
+    }
 
-        User user = userService.findById(userId);
+    @Override
+    public Resource findByFileName(String fileName) {
 
-        Assignment assignment = assignmentRepository.findByLectureAndAuthor(lecture, user)
+        Assignment assignment = assignmentRepository.findByFileName(fileName)
                 .orElseThrow(() -> new NotFoundException("Assignment not found"));
 
-        String fileName = assignment.getFileName();
         return loadFileByName(fileName);
     }
 

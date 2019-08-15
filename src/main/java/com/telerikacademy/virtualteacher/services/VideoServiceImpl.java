@@ -54,7 +54,7 @@ public class VideoServiceImpl extends StorageServiceBase implements VideoService
 
         String fileType = allowedTypes.get(videoFile.getContentType());
         String fileName = String.format("video_L%d.%s", lectureId, fileType);
-        String fileUrl = storeFile(videoFile, lectureId, fileName);
+        String fileUrl = storeFile(videoFile, lectureId.toString(), fileName);
 
         Video newVideo = new Video(
                 author,

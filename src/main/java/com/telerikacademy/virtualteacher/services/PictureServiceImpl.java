@@ -43,7 +43,7 @@ public class PictureServiceImpl extends StorageServiceBase implements PictureSer
 
         String fileType = allowedTypes.get(pictureFile.getContentType());
         String fileName = String.format("picture_U%d.%s", userId, fileType);
-        String fileUrl = storeFile(pictureFile, userId, fileName);
+        String fileUrl = storeFile(pictureFile, userId.toString(), fileName);
 
         Picture newPicture = new Picture(
                 fileUrl,

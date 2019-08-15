@@ -49,7 +49,7 @@ public class ThumbnailServiceImpl extends StorageServiceBase implements Thumbnai
 
         String fileType = allowedTypes.get(thumbnailFile.getContentType());
         String fileName = String.format("thumbnail_C%d.%s", courseId, fileType);
-        String fileUrl = storeFile(thumbnailFile, courseId, fileName);
+        String fileUrl = storeFile(thumbnailFile, courseId.toString(), fileName);
 
         Thumbnail newThumbnail = new Thumbnail(
                 fileUrl,
