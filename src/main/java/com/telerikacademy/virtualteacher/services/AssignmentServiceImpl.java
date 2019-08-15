@@ -44,6 +44,7 @@ public class AssignmentServiceImpl extends StorageServiceBase implements Assignm
         allowedTypes.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx");
         allowedTypes.put("application/msword", "doc");
         allowedTypes.put("text/x-java-source,java", "java");
+        allowedTypes.put("application/pdf","pdf");
     }
 
     @Override
